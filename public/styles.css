@@ -236,3 +236,24 @@ body {
 /* ── Utilities ── */
 .loading { text-align: center; padding: 48px; color: var(--text-muted); }
 .error { text-align: center; padding: 48px; color: var(--red); }
+
+/* ── Responsive ── */
+@media (max-width: 480px) {
+  #nav {
+    flex-wrap: wrap;
+    padding: 10px 12px;
+    gap: 8px;
+  }
+  .nav-left { flex: 1; }
+  .nav-right { flex: 0 0 100%; }
+  .search-input { width: 100%; }
+  #main { padding: 16px 12px; }
+  .scenario-grid { grid-template-columns: 1fr; }
+  .skill-header { flex-direction: column; }
+  .skill-header-right { width: 100%; }
+  .phases-grid { grid-template-columns: 1fr; }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  .scenario-grid { grid-template-columns: repeat(2, 1fr); }
+}
