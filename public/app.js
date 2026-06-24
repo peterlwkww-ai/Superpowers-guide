@@ -1,3 +1,5 @@
+import Fuse from '/vendor/fuse.mjs'
+
 // ── State ──────────────────────────────────────────────────────────────────
 const state = {
   scenarios: [],
