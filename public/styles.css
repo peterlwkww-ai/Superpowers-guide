@@ -245,7 +245,7 @@ body {
     gap: 8px;
   }
   .nav-left { flex: 1; }
-  .nav-right { flex: 0 0 100%; }
+  .nav-right { flex: 0 0 100%; max-width: 100%; margin-left: 0; }
   .search-input { width: 100%; }
   #main { padding: 16px 12px; }
   .scenario-grid { grid-template-columns: 1fr; }
