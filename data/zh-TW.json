@@ -1,0 +1,253 @@
+{
+  "ui": {
+    "copy": "複製",
+    "copied": "已複製！",
+    "copyError": "錯誤",
+    "backHome": "← 首頁",
+    "backAllSkills": "← 所有技能",
+    "heroSubtitle": "選擇一個情境，了解應使用哪些技能及使用方式。",
+    "browseSkills": "瀏覽全部 13 個技能 →",
+    "skillsUsed": "使用的技能",
+    "nextScenario": "下一個情境",
+    "whenToUse": "使用時機",
+    "howItWorks": "運作方式",
+    "usedIn": "使用於情境",
+    "allSkillsH1": "所有技能",
+    "searchStart": "開始輸入以搜尋…",
+    "searchPlaceholder": "🔍  搜尋技能、情境…",
+    "noResults": "找不到結果：",
+    "noResultsTip": "試試不同的關鍵字，或",
+    "browseAllSkillsLink": "瀏覽所有技能",
+    "scenariosLabel": "情境",
+    "skillsLabel": "技能",
+    "whatClaudeDoesLabel": "Claude 會做什麼：",
+    "whatToExpectLabel": "可以預期：",
+    "savesTo": "儲存至：",
+    "browseSkillsLink": "瀏覽技能 →",
+    "scenarioNotFound": "找不到情境。",
+    "skillNotFound": "找不到技能。",
+    "pageNotFound": "找不到此頁面。"
+  },
+  "categories": {
+    "Planning": "規劃",
+    "Building": "建置",
+    "Testing": "測試",
+    "Debugging": "除錯",
+    "Review": "審查",
+    "Git": "Git",
+    "Meta": "Meta"
+  },
+  "scenarios": {
+    "designing-a-feature": {
+      "title": "設計功能",
+      "description": "在寫任何程式碼之前，將粗略的想法轉化為經過審查的規格",
+      "estimatedTime": "約 20 分鐘",
+      "steps": [
+        {
+          "title": "啟動腦力激盪技能",
+          "instruction": "在 Claude Code 中輸入：",
+          "whatClaudeDoes": "逐一向你提問，了解你要建置的內容——目的、限制、成功標準。提出 2–3 種方案及取捨，然後逐段呈現設計規格供你審核。",
+          "whatToExpect": "3–6 個關於你想法的問題，逐步縮小設計範圍。對於 UI 問題，Claude 可能會開啟瀏覽器顯示模型。"
+        },
+        {
+          "title": "回答 Claude 的問題",
+          "instruction": "無需指令——直接在終端機中回覆即可。",
+          "whatClaudeDoes": "每次只問一個問題。提出 2–3 種實作方案，並在撰寫規格前請你選擇一種。",
+          "whatToExpect": "Claude 逐段呈現設計規格，並在每段後請求確認。"
+        },
+        {
+          "title": "核准設計規格",
+          "instruction": "審查每個部分並說是，或要求修改。",
+          "whatClaudeDoes": "將核准的規格儲存至 docs/superpowers/specs/YYYY-MM-DD-<主題>-design.md，然後自動呼叫撰寫計畫技能。",
+          "whatToExpect": "核准後，Claude 會開始撰寫分解成 2–5 分鐘任務的實作計畫。",
+          "saves": "docs/superpowers/specs/YYYY-MM-DD-<主題>-design.md"
+        }
+      ]
+    },
+    "building-a-feature": {
+      "title": "建置功能",
+      "description": "使用 TDD 和子代理驅動開發來實作——Claude 自動執行每個任務",
+      "estimatedTime": "約 45 分鐘",
+      "steps": [
+        {
+          "title": "建立隔離的工作空間",
+          "instruction": "在 Claude Code 中輸入：",
+          "whatClaudeDoes": "建立新的 git 分支和隔離的工作樹，確保功能工作不會影響主工作空間。執行專案設定並驗證乾淨的測試基準。",
+          "whatToExpect": "建立新分支。Claude 確認測試基準乾淨後才開始工作。"
+        },
+        {
+          "title": "使用子代理驅動開發來建置",
+          "instruction": "在 Claude Code 中輸入（需要已核准的計畫）：",
+          "whatClaudeDoes": "為實作計畫中的每個任務派發一個新的子代理。每個任務都有兩階段審查：先是規格符合性，再是程式碼品質。可以自主執行一小時或更長時間。",
+          "whatToExpect": "Claude 執行計畫中的每個任務。你會看到進度更新。遇到需要輸入的重要問題時會暫停。"
+        },
+        {
+          "title": "自動強制執行 TDD",
+          "instruction": "無需動作——此功能在實作期間自動觸發。",
+          "whatClaudeDoes": "強制執行 RED→GREEN→REFACTOR：先寫失敗的測試，確認失敗，寫最少的程式碼讓測試通過，再重構。刪除在測試前寫的任何程式碼。",
+          "whatToExpect": "每個功能在實作前都會先寫測試。Claude 不會提交未通過測試的程式碼。"
+        }
+      ]
+    },
+    "debugging": {
+      "title": "除錯",
+      "description": "系統性地找出根本原因——而不是猜測後祈禱",
+      "estimatedTime": "約 15 分鐘",
+      "steps": [
+        {
+          "title": "開始系統性除錯",
+          "instruction": "在 Claude Code 遇到錯誤時輸入：",
+          "whatClaudeDoes": "執行 4 階段根本原因分析：(1) 觀察——重現並記錄確切症狀，(2) 假設——列出可能原因並按可能性排序，(3) 驗證——以最小變更測試每個假設，(4) 修復並確認——套用最小修復並驗證根本原因已解決。",
+          "whatToExpect": "Claude 在有確認根本原因的證據之前不會提出修復方案。防止因修復症狀而非原因所造成的浪費。"
+        },
+        {
+          "title": "驗證修復確實有效",
+          "instruction": "套用修復後輸入：",
+          "whatClaudeDoes": "執行實際的驗證指令，並在宣稱錯誤已修復前確認輸出。防止沒有證明就說「應該可以了」。",
+          "whatToExpect": "Claude 向你展示確認修復有效的實際指令輸出——而不只是聲稱有效。"
+        }
+      ]
+    },
+    "code-review": {
+      "title": "程式碼審查",
+      "description": "以正確的方式請求並回應審查——嚴格技術，不走形式",
+      "estimatedTime": "約 10 分鐘",
+      "steps": [
+        {
+          "title": "請求程式碼審查",
+          "instruction": "在 Claude Code 寫完程式碼後輸入：",
+          "whatClaudeDoes": "執行審查前檢查清單：根據計畫審查程式碼，檢查安全性問題、正確性錯誤和程式碼品質。按嚴重性回報結果——CRITICAL 阻止進展，HIGH 應在合併前修復。",
+          "whatToExpect": "結構化的審查報告。CRITICAL 問題必須在繼續前修復。HIGH 問題會被標記但不阻止進行。"
+        },
+        {
+          "title": "回應審查意見",
+          "instruction": "收到審查意見後輸入：",
+          "whatClaudeDoes": "以嚴格技術態度處理審查意見——在實作前驗證每個建議是否確實正確。對不正確的意見提出反對，而非盲目套用。",
+          "whatToExpect": "Claude 確認哪些意見有效，解釋哪些不同意（及原因），並在驗證後實作已接受的變更。"
+        }
+      ]
+    },
+    "merging-and-shipping": {
+      "title": "合併與發布",
+      "description": "乾淨地結束開發分支——合併、PR、保留或捨棄",
+      "estimatedTime": "約 5 分鐘",
+      "steps": [
+        {
+          "title": "完成開發分支",
+          "instruction": "在所有任務完成且測試通過時輸入：",
+          "whatClaudeDoes": "驗證所有測試通過，然後提供四個選項：(1) 合併至主分支，(2) 開啟 Pull Request，(3) 保留分支留待日後，(4) 捨棄分支。選擇後清理 git 工作樹。",
+          "whatToExpect": "有每個選項說明的清晰決策點。Claude 在確認測試通過前不會合併。"
+        }
+      ]
+    },
+    "understanding-a-skill": {
+      "title": "了解技能",
+      "description": "深入研究 13 個超能力技能中的任何一個——何時使用、如何運作、輸入什麼",
+      "estimatedTime": "自訂步調",
+      "steps": [
+        {
+          "title": "瀏覽技能庫",
+          "instruction": "點擊下方連結或依技能名稱搜尋：",
+          "whatClaudeDoes": "不適用——此情境直接連結至技能瀏覽器。",
+          "whatToExpect": "全部 13 個技能依類別列出：規劃、建置、測試、除錯、審查、Git、Meta。"
+        },
+        {
+          "title": "點擊任何技能查看完整詳情",
+          "instruction": "每個技能頁面顯示：",
+          "whatClaudeDoes": "不適用。",
+          "whatToExpect": "呼叫它的斜線指令、何時使用（具體觸發條件）、逐步運作方式，以及哪些情境使用它。"
+        }
+      ]
+    },
+    "writing-a-custom-skill": {
+      "title": "撰寫自訂技能",
+      "description": "為專案專屬工作流程建立自己的技能——為你的領域擴展超能力",
+      "estimatedTime": "約 30 分鐘",
+      "steps": [
+        {
+          "title": "啟動撰寫技能指南",
+          "instruction": "在 Claude Code 中輸入：",
+          "whatClaudeDoes": "引導你依照超能力最佳實踐建立新技能。涵蓋技能結構、撰寫清晰的觸發條件，以及包含對抗性壓力測試的測試方法。",
+          "whatToExpect": "設計、撰寫和測試自訂技能的引導流程。技能儲存至 ~/.claude/skills/ 目錄，立即可用。"
+        },
+        {
+          "title": "測試技能",
+          "instruction": "無需單獨指令——測試是撰寫技能流程的一部分。",
+          "whatClaudeDoes": "執行對抗性壓力測試：嘗試找出應觸發但沒有的提示，以及不應觸發但卻觸發的提示。持續迭代直到技能行為可靠。",
+          "whatToExpect": "一個在正確情況下一致觸發、在不應套用時保持不動的技能。"
+        }
+      ]
+    }
+  },
+  "skills": {
+    "brainstorming": {
+      "description": "透過蘇格拉底式對話將粗略想法轉化為經過驗證的設計規格。逐一提問，提出 2–3 種方案，逐段呈現設計供核准。",
+      "whenToUse": ["開始任何新功能或專案", "在寫任何程式碼之前", "將粗略想法轉化為規格", "任何時候你輸入「我們來建置」"]
+    },
+    "writing-plans": {
+      "description": "將核准的設計規格分解成小任務（每個 2–5 分鐘）。每個任務都有確切的檔案路徑、完整的程式碼和驗證步驟。無佔位符，無待定項。",
+      "whenToUse": ["腦力激盪產生核准規格後", "實作功能之前", "將複雜工作分解成可追蹤的任務"]
+    },
+    "using-git-worktrees": {
+      "description": "在新分支上建立隔離的 git 工作樹，讓功能工作不會影響主工作空間。在工作開始前執行專案設定並驗證乾淨的測試基準。",
+      "whenToUse": ["開始任何功能工作之前", "需要與當前工作空間隔離時", "執行實作計畫之前"]
+    },
+    "subagent-driven-development": {
+      "description": "為實作計畫中的每個任務派發一個新的子代理。每個任務都有兩階段審查：先是規格符合性，再是程式碼品質。可以自主執行數小時。",
+      "whenToUse": ["執行實作計畫", "撰寫計畫完成後", "用於自主多任務實作"],
+      "phases": [
+        { "label": "讀取規格", "detail": "子代理讀取完整的實作計畫和具體任務。" },
+        { "label": "實作", "detail": "依照 TDD 撰寫程式碼——先寫測試，再寫最少的實作。" },
+        { "label": "規格審查", "detail": "檢查：實作是否符合計畫所指定的內容？" },
+        { "label": "品質審查", "detail": "獨立檢查程式碼品質——可讀性、正確性、安全性。" }
+      ]
+    },
+    "executing-plans": {
+      "description": "子代理驅動開發的替代方案。在當前對話中批次執行計畫任務，在批次之間設有人工審查檢查點。",
+      "whenToUse": ["想要在任務批次之間設置檢查點時", "子代理驅動開發的替代方案", "偏好留在當前對話中時"]
+    },
+    "dispatching-parallel-agents": {
+      "description": "將 2 個以上的獨立任務分配給平行子代理。當任務沒有共享狀態或順序依賴時，比順序執行快得多。",
+      "whenToUse": ["2 個以上可並行執行的任務", "沒有共享狀態的任務", "順序執行會太慢時"]
+    },
+    "test-driven-development": {
+      "description": "強制執行 RED→GREEN→REFACTOR 循環。先寫失敗的測試，確認失敗，寫最少的程式碼讓測試通過，再重構。刪除在測試前寫的程式碼。",
+      "whenToUse": ["實作任何功能或錯誤修復", "在子代理驅動開發期間自動觸發", "任何時候寫實作程式碼"],
+      "phases": [
+        { "label": "紅燈 (RED)", "detail": "寫一個描述所需行為的失敗測試。執行它——確認失敗。" },
+        { "label": "綠燈 (GREEN)", "detail": "寫最少的實作讓測試通過。不多不少。" },
+        { "label": "重構 (REFACTOR)", "detail": "在保持測試通過的同時整理程式碼。改善命名，消除重複。" }
+      ]
+    },
+    "systematic-debugging": {
+      "description": "4 階段根本原因分析流程。在提出任何解決方案前要求有證據，防止猜測、浪費修復和反覆出現的錯誤。",
+      "whenToUse": ["任何錯誤或測試失敗", "意外行為", "提出修復之前", "同一個錯誤反覆出現時"],
+      "phases": [
+        { "label": "觀察", "detail": "重現錯誤。記錄確切症狀、輸入和輸出。暫不提出理論。" },
+        { "label": "假設", "detail": "列出所有可能原因。按可能性和驗證難易度排序。" },
+        { "label": "驗證", "detail": "以最小變更測試每個假設。用證據排除原因。" },
+        { "label": "修復並確認", "detail": "套用最小修復。驗證它解決了根本原因，而非症狀。" }
+      ]
+    },
+    "verification-before-completion": {
+      "description": "在宣稱工作完成前，要求執行實際的驗證指令並確認真實輸出。永遠先有證據，再做斷言。",
+      "whenToUse": ["在宣稱工作完成之前", "在提交或建立 PR 之前", "修復錯誤後", "在說「應該可以了」之前"]
+    },
+    "requesting-code-review": {
+      "description": "根據實作計畫審查程式碼的審查前檢查清單。按嚴重性回報結果：CRITICAL 阻止，HIGH 警告，MEDIUM 告知。",
+      "whenToUse": ["寫完或修改程式碼後", "計畫中的實作任務之間", "合併至主分支之前"]
+    },
+    "receiving-code-review": {
+      "description": "以嚴格技術態度處理審查意見——在實作前驗證每個建議是否確實正確。對不正確的意見提出反對，而非盲目套用。",
+      "whenToUse": ["收到程式碼審查意見後", "實作審查建議之前", "意見不清楚或有技術疑問時"]
+    },
+    "finishing-a-development-branch": {
+      "description": "驗證測試通過，提供結構化選項（合併/PR/保留/捨棄），並清理 git 工作樹。在確認測試通過前不會合併。",
+      "whenToUse": ["計畫中的所有任務都完成了", "測試通過中", "準備好整合工作"]
+    },
+    "writing-skills": {
+      "description": "建立、測試和部署新技能的完整指南。包含對抗性壓力測試方法，確保技能可靠觸發。",
+      "whenToUse": ["建立專案專屬工作流程", "為你的領域擴展超能力", "掌握核心超能力工作流程後"]
+    }
+  }
+}

@@ -4,17 +4,81 @@ import Fuse from '/vendor/fuse.mjs'
 const state = {
   scenarios: [],
   skills: [],
-  fuse: null
+  fuse: null,
+  lang: localStorage.getItem('lang') || 'en',
+  translations: { ui: {}, categories: {}, scenarios: {}, skills: {} }
+}
+
+// ── English UI strings ─────────────────────────────────────────────────────
+const EN = {
+  copy: 'Copy',
+  copied: 'Copied!',
+  copyError: 'Error',
+  backHome: '← Home',
+  backAllSkills: '← All Skills',
+  heroSubtitle: 'Pick a scenario to see exactly which skills to use and how.',
+  browseSkills: 'Browse all 13 skills →',
+  skillsUsed: 'Skills used',
+  nextScenario: 'Next scenario',
+  whenToUse: 'When to use',
+  howItWorks: 'How it works',
+  usedIn: 'Used in scenarios',
+  allSkillsH1: 'All Skills',
+  searchStart: 'Start typing to search…',
+  searchPlaceholder: '🔍  Search skills, scenarios…',
+  noResults: 'No results for',
+  noResultsTip: 'Try a different keyword, or',
+  browseAllSkillsLink: 'browse all skills',
+  scenariosLabel: 'Scenarios',
+  skillsLabel: 'Skills',
+  whatClaudeDoesLabel: 'What Claude does:',
+  whatToExpectLabel: 'What to expect:',
+  savesTo: 'Saves to:',
+  browseSkillsLink: 'Browse skills →',
+  scenarioNotFound: 'Scenario not found.',
+  skillNotFound: 'Skill not found.',
+  pageNotFound: 'Page not found.',
+}
+
+// ── Translation helpers ────────────────────────────────────────────────────
+function ui(key) {
+  if (state.lang === 'zh-TW') return state.translations.ui[key] || EN[key] || key
+  return EN[key] || key
+}
+
+function trScenario(scenario, field) {
+  if (state.lang === 'zh-TW') return state.translations.scenarios[scenario.id]?.[field] ?? scenario[field]
+  return scenario[field]
+}
+
+function trStep(scenario, i, field) {
+  if (state.lang === 'zh-TW') return state.translations.scenarios[scenario.id]?.steps?.[i]?.[field] ?? scenario.steps[i][field]
+  return scenario.steps[i][field]
+}
+
+function trSkill(skill, field) {
+  if (state.lang === 'zh-TW') return state.translations.skills[skill.id]?.[field] ?? skill[field]
+  return skill[field]
+}
+
+function trPhase(skill, i, field) {
+  if (state.lang === 'zh-TW') return state.translations.skills[skill.id]?.phases?.[i]?.[field] ?? skill.phases[i][field]
+  return skill.phases[i][field]
+}
+
+function trCategory(cat) {
+  if (state.lang === 'zh-TW') return state.translations.categories[cat] || cat
+  return cat
 }
 
 // ── Utilities ──────────────────────────────────────────────────────────────
 function copyToClipboard(text, btn) {
   navigator.clipboard.writeText(text).then(() => {
-    btn.textContent = 'Copied!'
-    setTimeout(() => { btn.textContent = 'Copy' }, 2000)
+    btn.textContent = ui('copied')
+    setTimeout(() => { btn.textContent = ui('copy') }, 2000)
   }).catch(() => {
-    btn.textContent = 'Error'
-    setTimeout(() => { btn.textContent = 'Copy' }, 2000)
+    btn.textContent = ui('copyError')
+    setTimeout(() => { btn.textContent = ui('copy') }, 2000)
   })
 }
 
@@ -30,8 +94,38 @@ function makeCopyBlock(command) {
   return `
     <div class="copy-block">
       <code>${escHtml(command)}</code>
-      <button class="copy-btn" data-command="${escHtml(command)}">Copy</button>
+      <button class="copy-btn" data-command="${escHtml(command)}">${ui('copy')}</button>
     </div>`
+}
+
+// ── Language toggle ────────────────────────────────────────────────────────
+function toggleLang() {
+  state.lang = state.lang === 'en' ? 'zh-TW' : 'en'
+  localStorage.setItem('lang', state.lang)
+  document.getElementById('lang-toggle').textContent = state.lang === 'en' ? '繁中' : 'EN'
+  document.getElementById('search-input').placeholder = ui('searchPlaceholder')
+  buildFuse()
+  router()
+}
+
+// ── Fuse index ─────────────────────────────────────────────────────────────
+function buildFuse() {
+  const searchData = [
+    ...state.scenarios.map(s => ({
+      ...s, _type: 'scenario',
+      title: trScenario(s, 'title'),
+      description: trScenario(s, 'description'),
+    })),
+    ...state.skills.map(s => ({
+      ...s, _type: 'skill',
+      description: trSkill(s, 'description'),
+      whenToUse: trSkill(s, 'whenToUse'),
+    }))
+  ]
+  state.fuse = new Fuse(searchData, {
+    threshold: 0.3,
+    keys: ['title', 'name', 'description', 'whenToUse']
+  })
 }
 
 // ── Router ─────────────────────────────────────────────────────────────────
@@ -41,42 +135,38 @@ function router() {
   const navBack = document.getElementById('nav-back')
   const searchInput = document.getElementById('search-input')
 
-  // Clear search input if not on search page
-  if (!hash.startsWith('#/search')) {
-    searchInput.value = ''
-  }
+  if (!hash.startsWith('#/search')) searchInput.value = ''
 
   if (hash === '#/' || hash === '') {
     navBack.innerHTML = ''
     renderHome(main)
   } else if (hash.startsWith('#/scenario/')) {
     const id = hash.replace('#/scenario/', '').split('?')[0]
-    navBack.innerHTML = '<a href="#/" class="back-link">← Home</a>'
+    navBack.innerHTML = `<a href="#/" class="back-link">${escHtml(ui('backHome'))}</a>`
     renderScenario(main, id)
   } else if (hash.startsWith('#/skill/')) {
     const parts = hash.replace('#/skill/', '').split('?')
     const id = parts[0]
-    const params = new URLSearchParams(parts[1] || '')
-    const from = params.get('from')
+    const from = new URLSearchParams(parts[1] || '').get('from')
     if (from) {
       const scenario = state.scenarios.find(s => s.id === from)
       navBack.innerHTML = scenario
-        ? `<a href="#/scenario/${from}" class="back-link">← ${escHtml(scenario.icon)} ${escHtml(scenario.title)}</a>`
-        : '<a href="#/" class="back-link">← Home</a>'
+        ? `<a href="#/scenario/${from}" class="back-link">← ${escHtml(scenario.icon)} ${escHtml(trScenario(scenario, 'title'))}</a>`
+        : `<a href="#/" class="back-link">${escHtml(ui('backHome'))}</a>`
     } else {
-      navBack.innerHTML = '<a href="#/skills" class="back-link">← All Skills</a>'
+      navBack.innerHTML = `<a href="#/skills" class="back-link">${escHtml(ui('backAllSkills'))}</a>`
     }
     renderSkill(main, id)
   } else if (hash.startsWith('#/search')) {
     const params = new URLSearchParams(hash.split('?')[1] || '')
-    navBack.innerHTML = '<a href="#/" class="back-link">← Home</a>'
+    navBack.innerHTML = `<a href="#/" class="back-link">${escHtml(ui('backHome'))}</a>`
     renderSearch(main, params.get('q') || '')
   } else if (hash === '#/skills') {
-    navBack.innerHTML = '<a href="#/" class="back-link">← Home</a>'
+    navBack.innerHTML = `<a href="#/" class="back-link">${escHtml(ui('backHome'))}</a>`
     renderAllSkills(main)
   } else {
     navBack.innerHTML = ''
-    main.innerHTML = '<div class="error">Page not found.</div>'
+    main.innerHTML = `<div class="error">${escHtml(ui('pageNotFound'))}</div>`
   }
 }
 
@@ -103,22 +193,21 @@ function setupNavSearch() {
 // ── Init ───────────────────────────────────────────────────────────────────
 async function init() {
   try {
-    const [scenariosRes, skillsRes] = await Promise.all([
+    const [scenariosRes, skillsRes, zhRes] = await Promise.all([
       fetch('/data/scenarios.json'),
-      fetch('/data/skills.json')
+      fetch('/data/skills.json'),
+      fetch('/data/zh-TW.json')
     ])
     state.scenarios = await scenariosRes.json()
     state.skills = await skillsRes.json()
+    state.translations = await zhRes.json()
 
-    const searchData = [
-      ...state.scenarios.map(s => ({ ...s, _type: 'scenario' })),
-      ...state.skills.map(s => ({ ...s, _type: 'skill' }))
-    ]
-    state.fuse = new Fuse(searchData, {
-      threshold: 0.3,
-      keys: ['title', 'name', 'description', 'whenToUse', 'steps.title', 'steps.whatClaudeDoes']
-    })
+    const toggle = document.getElementById('lang-toggle')
+    toggle.textContent = state.lang === 'en' ? '繁中' : 'EN'
+    toggle.addEventListener('click', toggleLang)
+    document.getElementById('search-input').placeholder = ui('searchPlaceholder')
 
+    buildFuse()
     setupNavSearch()
     window.addEventListener('hashchange', router)
     router()
@@ -130,53 +219,58 @@ async function init() {
 
 // ── Render: Home ───────────────────────────────────────────────────────────
 function renderHome(main) {
-  const cards = state.scenarios.map(s => `
+  const cards = state.scenarios.map(s => {
+    const n = s.skillCount
+    const skillWord = state.lang === 'zh-TW' ? `${n} 個技能` : `${n} skill${n !== 1 ? 's' : ''}`
+    return `
     <a href="#/scenario/${s.id}" class="scenario-card">
       <div class="scenario-icon">${escHtml(s.icon)}</div>
-      <div class="scenario-title">${escHtml(s.title)}</div>
-      <div class="scenario-desc">${escHtml(s.description)}</div>
-      <div class="scenario-meta">${s.skillCount} skill${s.skillCount !== 1 ? 's' : ''} · ${escHtml(s.estimatedTime)}</div>
-    </a>`).join('')
+      <div class="scenario-title">${escHtml(trScenario(s, 'title'))}</div>
+      <div class="scenario-desc">${escHtml(trScenario(s, 'description'))}</div>
+      <div class="scenario-meta">${skillWord} · ${escHtml(trScenario(s, 'estimatedTime'))}</div>
+    </a>`
+  }).join('')
 
   main.innerHTML = `
     <div class="hero">
       <h1>⚡ Superpowers Guide</h1>
-      <p>A scenario-first reference for building great projects with Claude's superpowers plugin.</p>
+      <p>${escHtml(ui('heroSubtitle'))}</p>
     </div>
     <div class="scenario-grid">${cards}</div>
     <div class="page-footer">
-      <a href="#/skills">Browse all 13 skills →</a>
+      <a href="#/skills">${escHtml(ui('browseSkills'))}</a>
     </div>`
 }
 
 // ── Render: Scenario walkthrough ───────────────────────────────────────────
 function renderScenario(main, id) {
   const scenario = state.scenarios.find(s => s.id === id)
-  if (!scenario) { main.innerHTML = '<div class="error">Scenario not found.</div>'; return }
+  if (!scenario) { main.innerHTML = `<div class="error">${escHtml(ui('scenarioNotFound'))}</div>`; return }
 
   const stepColors = ['var(--accent)', 'var(--success)', 'var(--purple)', 'var(--red)', 'var(--yellow)']
 
-  const steps = scenario.steps.map(step => {
-    const color = stepColors[(step.number - 1) % stepColors.length]
+  const steps = scenario.steps.map((step, i) => {
+    const color = stepColors[i % stepColors.length]
     const commandBlock = step.command ? makeCopyBlock(step.command) : ''
-    const savesBlock = step.saves
-      ? `<div class="step-saves" style="margin-top:8px">Saves to: <code>${escHtml(step.saves)}</code></div>`
+    const saves = trStep(scenario, i, 'saves')
+    const savesBlock = saves
+      ? `<div class="step-saves" style="margin-top:8px">${escHtml(ui('savesTo'))} <code>${escHtml(saves)}</code></div>`
       : ''
     const browseBlock = step.browseLink
-      ? `<div style="margin-top:8px"><a href="${escHtml(step.browseLink)}" class="tag-link">Browse skills →</a></div>`
+      ? `<div style="margin-top:8px"><a href="${escHtml(step.browseLink)}" class="tag-link">${escHtml(ui('browseSkillsLink'))}</a></div>`
       : ''
 
     return `
       <div class="step-block">
         <div class="step-header">
           <div class="step-number" style="background:${color}">${step.number}</div>
-          <div class="step-title">${escHtml(step.title)}</div>
+          <div class="step-title">${escHtml(trStep(scenario, i, 'title'))}</div>
         </div>
         <div class="step-body">
-          <div class="step-instruction">${escHtml(step.instruction)}</div>
+          <div class="step-instruction">${escHtml(trStep(scenario, i, 'instruction'))}</div>
           ${commandBlock}
-          <div class="step-hint"><strong>What Claude does:</strong> ${escHtml(step.whatClaudeDoes)}</div>
-          <div class="step-expect"><strong style="color:var(--text)">What to expect:</strong> ${escHtml(step.whatToExpect)}</div>
+          <div class="step-hint"><strong>${escHtml(ui('whatClaudeDoesLabel'))}</strong> ${escHtml(trStep(scenario, i, 'whatClaudeDoes'))}</div>
+          <div class="step-expect"><strong style="color:var(--text)">${escHtml(ui('whatToExpectLabel'))}</strong> ${escHtml(trStep(scenario, i, 'whatToExpect'))}</div>
           ${savesBlock}${browseBlock}
         </div>
       </div>`
@@ -191,18 +285,18 @@ function renderScenario(main, id) {
     const next = state.scenarios.find(s => s.id === scenario.nextScenario)
     return next ? `
       <div class="next-scenario">
-        <span>Next scenario</span>
-        <a href="#/scenario/${next.id}">${escHtml(next.icon)} ${escHtml(next.title)} →</a>
+        <span>${escHtml(ui('nextScenario'))}</span>
+        <a href="#/scenario/${next.id}">${escHtml(next.icon)} ${escHtml(trScenario(next, 'title'))} →</a>
       </div>` : ''
   })() : ''
 
   main.innerHTML = `
     <div class="scenario-hero">
       <div class="scenario-hero-icon">${escHtml(scenario.icon)}</div>
-      <h1>${escHtml(scenario.title)}</h1>
-      <p>${escHtml(scenario.description)}</p>
+      <h1>${escHtml(trScenario(scenario, 'title'))}</h1>
+      <p>${escHtml(trScenario(scenario, 'description'))}</p>
     </div>
-    ${skillLinks ? `<div class="section-label" style="margin-top:16px">Skills used</div><div class="tags">${skillLinks}</div>` : ''}
+    ${skillLinks ? `<div class="section-label" style="margin-top:16px">${escHtml(ui('skillsUsed'))}</div><div class="tags">${skillLinks}</div>` : ''}
     <div style="margin-top:16px">${steps}</div>
     ${nextBlock}`
 }
@@ -210,44 +304,44 @@ function renderScenario(main, id) {
 // ── Render: Skill detail ────────────────────────────────────────────────────
 function renderSkill(main, id) {
   const skill = state.skills.find(s => s.id === id)
-  if (!skill) { main.innerHTML = '<div class="error">Skill not found.</div>'; return }
+  if (!skill) { main.innerHTML = `<div class="error">${escHtml(ui('skillNotFound'))}</div>`; return }
 
-  const whenTags = skill.whenToUse.map(w => `<span class="tag">${escHtml(w)}</span>`).join('')
+  const whenTags = trSkill(skill, 'whenToUse').map(w => `<span class="tag">${escHtml(w)}</span>`).join('')
 
   const phasesBlock = skill.phases ? `
-    <div class="section-label">How it works</div>
+    <div class="section-label">${escHtml(ui('howItWorks'))}</div>
     <div class="phases-grid">
-      ${skill.phases.map(p => `
+      ${skill.phases.map((p, i) => `
         <div class="phase-card">
-          <div class="phase-label" style="color:${p.color}">${escHtml(p.label)}</div>
-          <div class="phase-detail">${escHtml(p.detail)}</div>
+          <div class="phase-label" style="color:${p.color}">${escHtml(trPhase(skill, i, 'label'))}</div>
+          <div class="phase-detail">${escHtml(trPhase(skill, i, 'detail'))}</div>
         </div>`).join('')}
     </div>` : ''
 
   const scenarioLinks = (skill.usedInScenarios || []).map(sid => {
     const s = state.scenarios.find(sc => sc.id === sid)
-    const label = s ? `${s.icon} ${s.title}` : sid
+    const label = s ? `${s.icon} ${trScenario(s, 'title')}` : sid
     return `<a href="#/scenario/${sid}" class="tag-link">${escHtml(label)}</a>`
   }).join('')
 
   main.innerHTML = `
     <div class="skill-header">
       <div class="skill-header-left">
-        <div class="skill-category">${escHtml(skill.category)}</div>
+        <div class="skill-category">${escHtml(trCategory(skill.category))}</div>
         <div class="skill-name">${escHtml(skill.name)}</div>
-        <div class="skill-desc">${escHtml(skill.description)}</div>
+        <div class="skill-desc">${escHtml(trSkill(skill, 'description'))}</div>
       </div>
       <div class="skill-header-right">${makeCopyBlock(skill.command)}</div>
     </div>
-    <div class="section-label">When to use</div>
+    <div class="section-label">${escHtml(ui('whenToUse'))}</div>
     <div class="tags">${whenTags}</div>
     ${phasesBlock}
-    ${scenarioLinks ? `<div class="section-label">Used in scenarios</div><div class="tags">${scenarioLinks}</div>` : ''}`
+    ${scenarioLinks ? `<div class="section-label">${escHtml(ui('usedIn'))}</div><div class="tags">${scenarioLinks}</div>` : ''}`
 }
 
 // ── Render: Search results ─────────────────────────────────────────────────
 function renderSearch(main, q) {
-  if (!q) { main.innerHTML = '<div class="loading">Start typing to search…</div>'; return }
+  if (!q) { main.innerHTML = `<div class="loading">${escHtml(ui('searchStart'))}</div>`; return }
   if (!state.fuse) { main.innerHTML = '<div class="loading">Loading…</div>'; return }
 
   const results = state.fuse.search(q)
@@ -255,11 +349,16 @@ function renderSearch(main, q) {
   const skills = results.filter(r => r.item._type === 'skill').map(r => r.item)
 
   if (!results.length) {
+    const browseLink = `<a href="#/skills" style="color:var(--accent)">${escHtml(ui('browseAllSkillsLink'))}</a>`
     main.innerHTML = `
-      <div class="search-summary">No results for <strong>${escHtml(q)}</strong></div>
-      <div class="no-results">Try a different keyword, or <a href="#/skills" style="color:var(--accent)">browse all skills</a>.</div>`
+      <div class="search-summary">${escHtml(ui('noResults'))} <strong>${escHtml(q)}</strong></div>
+      <div class="no-results">${escHtml(ui('noResultsTip'))} ${browseLink}.</div>`
     return
   }
+
+  const countLabel = state.lang === 'zh-TW'
+    ? `${results.length} 筆結果：<strong>${escHtml(q)}</strong>`
+    : `${results.length} result${results.length !== 1 ? 's' : ''} for <strong>${escHtml(q)}</strong>`
 
   const scenarioItems = scenarios.map(s => `
     <a href="#/scenario/${s.id}" class="result-item">
@@ -282,9 +381,9 @@ function renderSearch(main, q) {
     </a>`).join('')
 
   main.innerHTML = `
-    <div class="search-summary">${results.length} result${results.length !== 1 ? 's' : ''} for <strong>${escHtml(q)}</strong></div>
-    ${scenarioItems ? `<div class="result-group-label">Scenarios</div>${scenarioItems}` : ''}
-    ${skillItems ? `<div class="result-group-label">Skills</div>${skillItems}` : ''}`
+    <div class="search-summary">${countLabel}</div>
+    ${scenarioItems ? `<div class="result-group-label">${escHtml(ui('scenariosLabel'))}</div>${scenarioItems}` : ''}
+    ${skillItems ? `<div class="result-group-label">${escHtml(ui('skillsLabel'))}</div>${skillItems}` : ''}`
 }
 
 // ── Render: All skills ─────────────────────────────────────────────────────
@@ -297,20 +396,24 @@ function renderAllSkills(main) {
         <div class="skill-item-command"><code>${escHtml(s.command)}</code></div>
         <div>
           <div class="skill-item-name">${escHtml(s.name)}</div>
-          <div class="skill-item-desc">${escHtml(s.description)}</div>
+          <div class="skill-item-desc">${escHtml(trSkill(s, 'description'))}</div>
         </div>
       </a>`).join('')
     return `
       <div class="skills-category">
-        <div class="skills-category-title">${escHtml(cat)}</div>
+        <div class="skills-category-title">${escHtml(trCategory(cat))}</div>
         ${items}
       </div>`
   }).join('')
 
+  const subtitle = state.lang === 'zh-TW'
+    ? `全部 13 個超能力技能，依 ${categories.length} 個類別整理`
+    : `13 superpowers skills across ${categories.length} categories`
+
   main.innerHTML = `
     <div class="skills-page-header">
-      <h1>All Skills</h1>
-      <p>13 superpowers skills across ${categories.length} categories</p>
+      <h1>${escHtml(ui('allSkillsH1'))}</h1>
+      <p>${subtitle}</p>
     </div>
     ${groups}`
 }
