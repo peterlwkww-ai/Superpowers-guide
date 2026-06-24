@@ -1,5 +1,7 @@
 # Superpowers Guide
 
+**Language / 語言：** English | [繁體中文](#繁體中文)
+
 A local web app that teaches you how to build great projects using the [Superpowers Claude plugin](https://github.com/anthropics/claude-code). Browse all 7 lifecycle scenarios and 13 skills with step-by-step walkthroughs, copy buttons, and live search. Supports **English** and **繁體中文 (Traditional Chinese)**.
 
 ![screenshot](https://raw.githubusercontent.com/peterlwkww-ai/Superpowers-guide/master/docs/screenshot.png)
@@ -68,7 +70,7 @@ Go to **http://localhost:3000**
 | **Copy a command** | Click the **Copy** button next to any slash command |
 | **Search** | Type in the search bar (top right) |
 | **Browse all skills** | Click "Browse all 13 skills →" at the bottom of the home page |
-| **Switch language** | Click **繁中** (or **EN**) in the top-right corner |
+| **Switch language** | Click **繁中** (or **EN**) in the top-left corner |
 
 ---
 
@@ -141,3 +143,151 @@ npm start
 - **Node.js + Express** — serves the app locally
 - **Vanilla JS + CSS** — no build step required
 - **Fuse.js** — fuzzy search
+
+---
+
+---
+
+# 繁體中文
+
+**Language / 語言：** [English](#superpowers-guide) | 繁體中文
+
+本地端網頁應用程式，教你如何使用 [Superpowers Claude 外掛](https://github.com/anthropics/claude-code) 打造出色的專案。瀏覽 7 個開發情境與 13 個技能，包含逐步操作說明、一鍵複製指令及即時搜尋功能。支援**英文**與**繁體中文**介面切換。
+
+---
+
+## 事前準備
+
+請確認已安裝以下工具：
+
+- **Git** — https://git-scm.com/downloads
+- **Node.js**（v16 或以上）— https://nodejs.org
+
+開啟終端機，輸入以下指令確認是否已安裝：
+
+```bash
+git --version
+node --version
+```
+
+---
+
+## 快速開始
+
+### 1. 複製專案
+
+```bash
+git clone https://github.com/peterlwkww-ai/Superpowers-guide.git
+```
+
+### 2. 進入專案資料夾
+
+```bash
+cd Superpowers-guide
+```
+
+### 3. 安裝套件
+
+```bash
+npm install
+```
+
+### 4. 啟動伺服器
+
+```bash
+npm start
+```
+
+看到以下訊息代表啟動成功：
+
+```
+Superpowers Guide running at http://localhost:3000
+```
+
+### 5. 在瀏覽器開啟
+
+前往 **http://localhost:3000**
+
+---
+
+## 功能說明
+
+| 功能 | 操作方式 |
+|---|---|
+| **瀏覽情境** | 點擊首頁任一卡片 |
+| **複製指令** | 點擊任一斜線指令旁的**複製**按鈕 |
+| **搜尋** | 在頂部搜尋欄輸入關鍵字 |
+| **瀏覽所有技能** | 點擊首頁底部的「瀏覽全部 13 個技能 →」 |
+| **切換語言** | 點擊左上角的**繁中**（或 **EN**）按鈕 |
+
+---
+
+## 在手機上開啟
+
+伺服器啟動後，可在手機上瀏覽本應用程式。
+
+### 前提條件
+- 手機與電腦必須連接**同一個 WiFi 網路**
+
+### 步驟
+
+**1. 查詢電腦的本機 IP 位址**
+
+開啟終端機，輸入：
+
+```bash
+# Windows
+ipconfig
+# 找到 WiFi 介面卡下的「IPv4 位址」（例如 192.168.1.x 或 10.x.x.x）
+
+# macOS / Linux
+ifconfig | grep "inet "
+```
+
+**2. 在手機瀏覽器開啟**
+
+使用手機的 Chrome 或 Safari，前往：
+
+```
+http://<電腦IP>:3000
+```
+
+例如：`http://192.168.1.42:3000`
+
+**3. 若頁面無法載入——開放防火牆連接埠**
+
+Windows 可能會封鎖 3000 連接埠的連線。以系統管理員身分在終端機執行一次以下指令：
+
+```
+netsh advfirewall firewall add rule name="Node 3000" dir=in action=allow protocol=TCP localport=3000
+```
+
+之後再從手機重新嘗試。
+
+### 保持伺服器運行
+
+手機連線的是電腦上執行的伺服器——瀏覽時伺服器必須持續運行。若關閉終端機，手機頁面將無法載入。
+
+---
+
+## 停止伺服器
+
+在執行伺服器的終端機按下 **Ctrl+C**。
+
+---
+
+## 取得最新更新
+
+```bash
+git pull
+npm install
+npm start
+```
+
+---
+
+## 技術架構
+
+- **Node.js + Express** — 本地端伺服器
+- **Vanilla JS + CSS** — 無需建置步驟
+- **Fuse.js** — 模糊搜尋
