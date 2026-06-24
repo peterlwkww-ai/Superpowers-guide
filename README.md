@@ -72,6 +72,54 @@ Go to **http://localhost:3000**
 
 ---
 
+## Opening on Your Phone
+
+You can browse the guide on your phone while the server is running on your PC.
+
+### Requirements
+- Your phone and PC must be on the **same WiFi network**
+
+### Steps
+
+**1. Find your PC's local IP address**
+
+Open a terminal and run:
+
+```bash
+# Windows
+ipconfig
+# Look for "IPv4 Address" under your WiFi adapter (e.g. 192.168.1.x or 10.x.x.x)
+
+# macOS / Linux
+ifconfig | grep "inet "
+```
+
+**2. Open the app on your phone**
+
+In your phone's browser (Chrome or Safari), go to:
+
+```
+http://<your-PC-IP>:3000
+```
+
+For example: `http://192.168.1.42:3000`
+
+**3. If the page doesn't load — open the firewall port**
+
+Windows may block incoming connections on port 3000. Run this once in a terminal as Administrator:
+
+```
+netsh advfirewall firewall add rule name="Node 3000" dir=in action=allow protocol=TCP localport=3000
+```
+
+Then try again on your phone.
+
+### Keep the server running
+
+Your phone connects to the server running on your PC — the server must stay running while you browse. If you close the terminal, the page will stop loading on your phone.
+
+---
+
 ## Stopping the server
 
 Press **Ctrl+C** in the terminal where the server is running.
