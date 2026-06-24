@@ -252,6 +252,20 @@ body {
   .skill-header { flex-direction: column; }
   .skill-header-right { width: 100%; }
   .phases-grid { grid-template-columns: 1fr; }
+
+  /* Skills list — stack command badge above name/desc */
+  .skill-item { flex-direction: column; align-items: flex-start; gap: 6px; }
+  .skill-item-command { max-width: 100%; overflow-x: auto; }
+  .skill-item-command code { white-space: nowrap; }
+
+  /* Search results — same fix */
+  .result-item { flex-wrap: wrap; gap: 8px; }
+  .result-command { max-width: 100%; overflow-x: auto; }
+  .result-command code { white-space: nowrap; }
+  .result-arrow { margin-left: 0; }
+
+  /* Copy blocks — allow code to scroll horizontally */
+  .copy-block { overflow-x: auto; }
 }
 
 @media (min-width: 481px) and (max-width: 768px) {
