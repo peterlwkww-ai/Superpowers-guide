@@ -2,7 +2,7 @@
 
 A local web app that teaches you how to build great projects using the [Superpowers Claude plugin](https://github.com/anthropics/claude-code). Browse all 7 lifecycle scenarios and 13 skills with step-by-step walkthroughs, copy buttons, and live search. Supports **English** and **繁體中文 (Traditional Chinese)**.
 
-![screenshot](https://raw.githubusercontent.com/peterlwkww-ai/Superpower-learn/master/docs/screenshot.png)
+![screenshot](https://raw.githubusercontent.com/peterlwkww-ai/Superpowers-guide/master/docs/screenshot.png)
 
 ---
 
@@ -27,13 +27,13 @@ node --version
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/peterlwkww-ai/Superpower-learn.git
+git clone https://github.com/peterlwkww-ai/Superpowers-guide.git
 ```
 
 ### 2. Enter the project folder
 
 ```bash
-cd Superpower-learn
+cd Superpowers-guide
 ```
 
 ### 3. Install dependencies
