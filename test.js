@@ -38,6 +38,30 @@ async function runTests() {
   console.log('\nAll tests passed.')
 }
 
+// Validate scenarios.json structure
+function validateScenarios() {
+  const fs = require('fs')
+  const scenarios = JSON.parse(fs.readFileSync('./data/scenarios.json', 'utf8'))
+  assert.ok(Array.isArray(scenarios), 'scenarios must be an array')
+  assert.strictEqual(scenarios.length, 7, 'must have exactly 7 scenarios')
+  scenarios.forEach((s, i) => {
+    assert.ok(s.id, `scenario[${i}] must have id`)
+    assert.ok(s.icon, `scenario[${i}] must have icon`)
+    assert.ok(s.title, `scenario[${i}] must have title`)
+    assert.ok(s.description, `scenario[${i}] must have description`)
+    assert.ok(typeof s.skillCount === 'number', `scenario[${i}] must have skillCount`)
+    assert.ok(s.estimatedTime, `scenario[${i}] must have estimatedTime`)
+    assert.ok(Array.isArray(s.steps), `scenario[${i}] must have steps array`)
+    s.steps.forEach((step, j) => {
+      assert.ok(step.number, `scenario[${i}].steps[${j}] must have number`)
+      assert.ok(step.title, `scenario[${i}].steps[${j}] must have title`)
+      assert.ok(step.whatClaudeDoes, `scenario[${i}].steps[${j}] must have whatClaudeDoes`)
+    })
+  })
+  console.log('✓ scenarios.json valid — 7 scenarios, all steps valid')
+}
+validateScenarios()
+
 runTests()
   .then(() => server.close())
   .catch(err => {
