@@ -1,1 +1,191 @@
-[]
+[
+  {
+    "id": "brainstorming",
+    "name": "brainstorming",
+    "command": "/superpowers:brainstorming",
+    "category": "Planning",
+    "description": "Turns rough ideas into validated design specs through Socratic dialogue. Questions one at a time, proposes 2–3 approaches, presents design in sections for approval.",
+    "whenToUse": [
+      "Starting any new feature or project",
+      "Before writing any code",
+      "Turning a rough idea into a spec",
+      "Any time you type 'let's build'"
+    ],
+    "usedInScenarios": ["designing-a-feature"]
+  },
+  {
+    "id": "writing-plans",
+    "name": "writing-plans",
+    "command": "/superpowers:writing-plans",
+    "category": "Planning",
+    "description": "Breaks an approved design spec into bite-sized tasks (2–5 min each). Every task has exact file paths, complete code, and verification steps. No placeholders, no TBDs.",
+    "whenToUse": [
+      "After brainstorming produces an approved spec",
+      "Before implementing a feature",
+      "Breaking complex work into trackable tasks"
+    ],
+    "usedInScenarios": ["designing-a-feature", "building-a-feature"]
+  },
+  {
+    "id": "using-git-worktrees",
+    "name": "using-git-worktrees",
+    "command": "/superpowers:using-git-worktrees",
+    "category": "Git",
+    "description": "Creates an isolated git worktree on a new branch so feature work won't contaminate the main workspace. Runs project setup and verifies a clean test baseline before work starts.",
+    "whenToUse": [
+      "Before starting any feature work",
+      "When you need isolation from current workspace",
+      "Before executing an implementation plan"
+    ],
+    "usedInScenarios": ["building-a-feature"]
+  },
+  {
+    "id": "subagent-driven-development",
+    "name": "subagent-driven-development",
+    "command": "/superpowers:subagent-driven-development",
+    "category": "Building",
+    "description": "Dispatches a fresh subagent per task from the implementation plan. Each task gets two-stage review: spec compliance first, then code quality. Can run autonomously for hours.",
+    "whenToUse": [
+      "Executing an implementation plan",
+      "After writing-plans completes",
+      "For autonomous multi-task implementation"
+    ],
+    "phases": [
+      { "number": 1, "label": "Read spec", "color": "#4a9eff", "detail": "Subagent reads the full implementation plan and the specific task." },
+      { "number": 2, "label": "Implement", "color": "#238636", "detail": "Writes code following TDD — test first, then minimal implementation." },
+      { "number": 3, "label": "Spec review", "color": "#8957e5", "detail": "Checks: does the implementation match what the plan specified?" },
+      { "number": 4, "label": "Quality review", "color": "#e3b341", "detail": "Checks code quality independently — readability, correctness, security." }
+    ],
+    "usedInScenarios": ["building-a-feature"]
+  },
+  {
+    "id": "executing-plans",
+    "name": "executing-plans",
+    "command": "/superpowers:executing-plans",
+    "category": "Building",
+    "description": "Alternative to subagent-driven-development. Executes plan tasks in the current session in batches, with human review checkpoints between batches.",
+    "whenToUse": [
+      "When you want checkpoints between task batches",
+      "Alternative to subagent-driven-development",
+      "When you prefer staying in the current session"
+    ],
+    "usedInScenarios": ["building-a-feature"]
+  },
+  {
+    "id": "dispatching-parallel-agents",
+    "name": "dispatching-parallel-agents",
+    "command": "/superpowers:dispatching-parallel-agents",
+    "category": "Building",
+    "description": "Fans out 2+ independent tasks to parallel subagents. Significantly faster than sequential execution when tasks have no shared state or sequential dependencies.",
+    "whenToUse": [
+      "2+ tasks that can run concurrently",
+      "Tasks with no shared state",
+      "When sequential execution would be slow"
+    ],
+    "usedInScenarios": ["building-a-feature"]
+  },
+  {
+    "id": "test-driven-development",
+    "name": "test-driven-development",
+    "command": "/superpowers:test-driven-development",
+    "category": "Testing",
+    "description": "Enforces RED→GREEN→REFACTOR cycle. Write failing test first, confirm it fails, write minimal code to pass, refactor. Deletes code written before tests.",
+    "whenToUse": [
+      "Implementing any feature or bug fix",
+      "Auto-triggers during subagent-driven-development",
+      "Any time implementation code is written"
+    ],
+    "phases": [
+      { "number": 1, "label": "RED", "color": "#f78166", "detail": "Write a failing test that describes the desired behavior. Run it — confirm it fails." },
+      { "number": 2, "label": "GREEN", "color": "#238636", "detail": "Write the minimal implementation to make the test pass. No more than needed." },
+      { "number": 3, "label": "REFACTOR", "color": "#4a9eff", "detail": "Clean up the code while keeping tests green. Improve names, remove duplication." }
+    ],
+    "usedInScenarios": ["building-a-feature"]
+  },
+  {
+    "id": "systematic-debugging",
+    "name": "systematic-debugging",
+    "command": "/superpowers:systematic-debugging",
+    "category": "Debugging",
+    "description": "4-phase root cause process. Prevents guessing, wasted fixes, and recurring bugs by requiring evidence before proposing any solution.",
+    "whenToUse": [
+      "Any bug or test failure",
+      "Unexpected behavior",
+      "Before proposing a fix",
+      "When the same bug keeps recurring"
+    ],
+    "phases": [
+      { "number": 1, "label": "Observe", "color": "#4a9eff", "detail": "Reproduce the bug. Capture exact symptoms, inputs, and outputs. No theories yet." },
+      { "number": 2, "label": "Hypothesize", "color": "#238636", "detail": "List all possible causes. Rank by likelihood and ease of verification." },
+      { "number": 3, "label": "Verify", "color": "#8957e5", "detail": "Test each hypothesis with minimal changes. Eliminate causes with evidence." },
+      { "number": 4, "label": "Fix & confirm", "color": "#f78166", "detail": "Apply minimal fix. Verify it resolves the root cause, not just the symptoms." }
+    ],
+    "usedInScenarios": ["debugging"]
+  },
+  {
+    "id": "verification-before-completion",
+    "name": "verification-before-completion",
+    "command": "/superpowers:verification-before-completion",
+    "category": "Debugging",
+    "description": "Requires running actual verification commands and confirming real output before claiming work is done. Evidence before assertions — always.",
+    "whenToUse": [
+      "Before claiming work is complete",
+      "Before committing or creating PRs",
+      "After fixing a bug",
+      "Before saying 'it should work now'"
+    ],
+    "usedInScenarios": ["debugging", "building-a-feature"]
+  },
+  {
+    "id": "requesting-code-review",
+    "name": "requesting-code-review",
+    "command": "/superpowers:requesting-code-review",
+    "category": "Review",
+    "description": "Pre-review checklist that reviews code against the implementation plan. Reports findings by severity: CRITICAL blocks, HIGH warns, MEDIUM informs.",
+    "whenToUse": [
+      "After writing or modifying code",
+      "Between implementation tasks in a plan",
+      "Before merging to main"
+    ],
+    "usedInScenarios": ["code-review"]
+  },
+  {
+    "id": "receiving-code-review",
+    "name": "receiving-code-review",
+    "command": "/superpowers:receiving-code-review",
+    "category": "Review",
+    "description": "Processes review feedback with technical rigor — verifies each suggestion is correct before implementing. Pushes back on incorrect feedback rather than blindly applying it.",
+    "whenToUse": [
+      "After receiving code review feedback",
+      "Before implementing review suggestions",
+      "When feedback seems unclear or questionable"
+    ],
+    "usedInScenarios": ["code-review"]
+  },
+  {
+    "id": "finishing-a-development-branch",
+    "name": "finishing-a-development-branch",
+    "command": "/superpowers:finishing-a-development-branch",
+    "category": "Git",
+    "description": "Verifies tests pass, presents structured options (merge/PR/keep/discard), and cleans up the git worktree. Won't merge until tests are confirmed green.",
+    "whenToUse": [
+      "All tasks in the plan are complete",
+      "Tests are passing",
+      "Ready to integrate the work"
+    ],
+    "usedInScenarios": ["merging-and-shipping"]
+  },
+  {
+    "id": "writing-skills",
+    "name": "writing-skills",
+    "command": "/superpowers:writing-skills",
+    "category": "Meta",
+    "description": "Complete guide for creating, testing, and deploying new skills. Includes adversarial pressure testing methodology to ensure skills trigger reliably.",
+    "whenToUse": [
+      "Creating project-specific workflows",
+      "Extending superpowers for your domain",
+      "After mastering the core superpowers workflow"
+    ],
+    "usedInScenarios": ["writing-a-custom-skill"]
+  }
+]

@@ -62,6 +62,23 @@ function validateScenarios() {
 }
 validateScenarios()
 
+function validateSkills() {
+  const fs = require('fs')
+  const skills = JSON.parse(fs.readFileSync('./data/skills.json', 'utf8'))
+  assert.ok(Array.isArray(skills), 'skills must be an array')
+  assert.strictEqual(skills.length, 13, 'must have exactly 13 skills')
+  skills.forEach((s, i) => {
+    assert.ok(s.id, `skill[${i}] must have id`)
+    assert.ok(s.name, `skill[${i}] must have name`)
+    assert.ok(s.command, `skill[${i}] must have command`)
+    assert.ok(s.category, `skill[${i}] must have category`)
+    assert.ok(s.description, `skill[${i}] must have description`)
+    assert.ok(Array.isArray(s.whenToUse), `skill[${i}] must have whenToUse array`)
+  })
+  console.log('✓ skills.json valid — 13 skills, all fields present')
+}
+validateSkills()
+
 runTests()
   .then(() => server.close())
   .catch(err => {
