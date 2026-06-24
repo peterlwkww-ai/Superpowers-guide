@@ -1,5 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><meta charset="UTF-8"><title>Superpowers Guide</title></head>
-<body><div id="main">Loading…</div></body>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Superpowers Guide</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <nav id="nav">
+    <div class="nav-left">
+      <span id="nav-back"></span>
+      <a href="#/" class="nav-logo">⚡ Superpowers Guide</a>
+    </div>
+    <div class="nav-right">
+      <input type="text" id="search-input" class="search-input" placeholder="🔍  Search skills, scenarios…" autocomplete="off">
+    </div>
+  </nav>
+  <main id="main">
+    <div class="loading">Loading…</div>
+  </main>
+  <script src="/vendor/fuse.min.js"></script>
+  <script src="/app.js"></script>
+</body>
 </html>
