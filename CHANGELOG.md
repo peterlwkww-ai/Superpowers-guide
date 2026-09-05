@@ -5,6 +5,17 @@ Newest entries first. Each entry names the tool or person that made the change.
 
 ## 2026-09-05 — Claude Code (Claude Fable 5.1), on behalf of Peter
 
+**README review**
+
+- Rewrote the intro: the guide is no longer "local only"; online vs local comparison table.
+- Added a real `docs/screenshot.png` (the README linked to a file that did not exist).
+- Node.js requirement raised from v16 to v18 (v16 is end-of-life).
+- Phone section now leads with the online URL; the local-server steps stay as the alternative.
+- New sections: Project structure, Keeping up with new superpowers releases, Contributing (pull first, test, commit, CHANGELOG).
+- Same changes mirrored in the Traditional Chinese half.
+
+## 2026-09-05 — Claude Code (Claude Fable 5.1), on behalf of Peter
+
 **GitHub Pages deployment**
 
 - `public/` is now a self-contained static site: `data/` moved to `public/data/`, Fuse.js vendored into `public/vendor/`, all asset and fetch paths made relative so the app works under `/Superpowers-guide/`.
