@@ -5,6 +5,18 @@ Newest entries first. Each entry names the tool or person that made the change.
 
 ## 2026-09-05 — Claude Code (Claude Fable 5.1), on behalf of Peter
 
+**Visual refresh**
+
+- Light mode added alongside dark. Follows the system setting by default; the ☾/☀ button in the nav overrides it and the choice is remembered.
+- Type scale raised for readability: 16px base, 15px body copy, 12px minimum. Muted text contrast improved in both themes.
+- Copy button is now a solid accent button with green "Copied!" and red error states.
+- Cards, steps, and result rows: more padding, larger radius, subtle shadow in light mode, hover lift.
+- "What Claude does" callout uses a tinted background instead of italic grey text.
+- Phase label colours in skills.json are mapped to theme tokens so they stay readable on light backgrounds.
+- Keyboard focus rings and a reduced-motion rule added.
+
+## 2026-09-05 — Claude Code (Claude Fable 5.1), on behalf of Peter
+
 **Content updated to superpowers v6.3.0**
 
 - Added the 14th skill, `using-superpowers`, the entry point that decides when other skills are invoked.

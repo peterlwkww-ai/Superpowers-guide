@@ -4,6 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Superpowers Guide</title>
+  <script>
+    // Apply the stored theme before first paint to avoid a flash.
+    try {
+      var t = localStorage.getItem('theme')
+      if (t === 'dark' || t === 'light') document.documentElement.setAttribute('data-theme', t)
+    } catch (e) {}
+  </script>
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
@@ -11,7 +18,8 @@
     <div class="nav-left">
       <span id="nav-back"></span>
       <a href="#/" class="nav-logo">⚡ Superpowers Guide</a>
-      <button id="lang-toggle" class="lang-btn">繁中</button>
+      <button id="lang-toggle" class="nav-btn">繁中</button>
+      <button id="theme-toggle" class="nav-btn theme-btn" aria-label="Toggle theme" title="Toggle theme">◐</button>
     </div>
     <div class="nav-right">
       <input type="text" id="search-input" class="search-input" placeholder="🔍  Search skills, scenarios…" autocomplete="off">

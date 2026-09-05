@@ -88,13 +88,32 @@ function trCategory(cat) {
 
 // ── Utilities ──────────────────────────────────────────────────────────────
 function copyToClipboard(text, btn) {
+  const reset = () => {
+    btn.textContent = ui('copy')
+    btn.classList.remove('is-copied', 'is-error')
+  }
   navigator.clipboard.writeText(text).then(() => {
     btn.textContent = ui('copied')
-    setTimeout(() => { btn.textContent = ui('copy') }, 2000)
+    btn.classList.add('is-copied')
+    setTimeout(reset, 2000)
   }).catch(() => {
     btn.textContent = ui('copyError')
-    setTimeout(() => { btn.textContent = ui('copy') }, 2000)
+    btn.classList.add('is-error')
+    setTimeout(reset, 2000)
   })
+}
+
+// Map the hex colours stored in skills.json onto theme tokens so phase
+// labels stay readable in both light and dark mode.
+const PHASE_COLORS = {
+  '#4a9eff': 'var(--accent)',
+  '#238636': 'var(--success)',
+  '#8957e5': 'var(--purple)',
+  '#f78166': 'var(--red)',
+  '#e3b341': 'var(--yellow)',
+}
+function phaseColor(hex) {
+  return PHASE_COLORS[String(hex).toLowerCase()] || hex
 }
 
 function escHtml(str) {
@@ -121,6 +140,26 @@ function toggleLang() {
   document.getElementById('search-input').placeholder = ui('searchPlaceholder')
   buildFuse()
   router()
+}
+
+// ── Theme toggle ───────────────────────────────────────────────────────────
+function currentTheme() {
+  const stored = document.documentElement.getAttribute('data-theme')
+  if (stored) return stored
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+}
+
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme)
+  try { localStorage.setItem('theme', theme) } catch (e) {}
+  const btn = document.getElementById('theme-toggle')
+  btn.textContent = theme === 'dark' ? '☀' : '☾'
+  btn.setAttribute('aria-label', theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode')
+  btn.title = btn.getAttribute('aria-label')
+}
+
+function toggleTheme() {
+  applyTheme(currentTheme() === 'dark' ? 'light' : 'dark')
 }
 
 // ── Fuse index ─────────────────────────────────────────────────────────────
@@ -222,6 +261,10 @@ async function init() {
     const toggle = document.getElementById('lang-toggle')
     toggle.textContent = state.lang === 'en' ? '繁中' : 'EN'
     toggle.addEventListener('click', toggleLang)
+
+    const themeBtn = document.getElementById('theme-toggle')
+    themeBtn.addEventListener('click', toggleTheme)
+    themeBtn.textContent = currentTheme() === 'dark' ? '☀' : '☾'
     document.getElementById('search-input').placeholder = ui('searchPlaceholder')
 
     buildFuse()
@@ -287,7 +330,7 @@ function renderScenario(main, id) {
           <div class="step-instruction">${escHtml(trStep(scenario, i, 'instruction'))}</div>
           ${commandBlock}
           <div class="step-hint"><strong>${escHtml(ui('whatClaudeDoesLabel'))}</strong> ${escHtml(trStep(scenario, i, 'whatClaudeDoes'))}</div>
-          <div class="step-expect"><strong style="color:var(--text)">${escHtml(ui('whatToExpectLabel'))}</strong> ${escHtml(trStep(scenario, i, 'whatToExpect'))}</div>
+          <div class="step-expect"><strong>${escHtml(ui('whatToExpectLabel'))}</strong> ${escHtml(trStep(scenario, i, 'whatToExpect'))}</div>
           ${savesBlock}${browseBlock}
         </div>
       </div>`
@@ -330,7 +373,7 @@ function renderSkill(main, id) {
     <div class="phases-grid">
       ${skill.phases.map((p, i) => `
         <div class="phase-card">
-          <div class="phase-label" style="color:${p.color}">${escHtml(trPhase(skill, i, 'label'))}</div>
+          <div class="phase-label" style="color:${phaseColor(p.color)}">${escHtml(trPhase(skill, i, 'label'))}</div>
           <div class="phase-detail">${escHtml(trPhase(skill, i, 'detail'))}</div>
         </div>`).join('')}
     </div>` : ''

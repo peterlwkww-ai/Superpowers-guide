@@ -73,6 +73,7 @@ Go to **http://localhost:3000**
 | **Search** | Type in the search bar (top right) |
 | **Browse all skills** | Click "Browse all 14 skills →" at the bottom of the home page |
 | **Switch language** | Click **繁中** (or **EN**) in the top-left corner |
+| **Switch theme** | Click ☾ or ☀ next to the language button. Follows your system setting until you choose |
 
 ---
 
@@ -223,6 +224,7 @@ Superpowers Guide running at http://localhost:3000
 | **搜尋** | 在頂部搜尋欄輸入關鍵字 |
 | **瀏覽所有技能** | 點擊首頁底部的「瀏覽全部 14 個技能 →」 |
 | **切換語言** | 點擊左上角的**繁中**（或 **EN**）按鈕 |
+| **切換主題** | 點擊語言按鈕旁的 ☾ 或 ☀。未選擇前跟隨系統設定 |
 
 ---
 
