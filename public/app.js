@@ -6,6 +6,7 @@ const state = {
   skills: [],
   fuse: null,
   lang: localStorage.getItem('lang') || 'en',
+  meta: { superpowersVersion: '', contentUpdated: '' },
   translations: { ui: {}, categories: {}, scenarios: {}, skills: {} }
 }
 
@@ -17,7 +18,11 @@ const EN = {
   backHome: '← Home',
   backAllSkills: '← All Skills',
   heroSubtitle: 'Pick a scenario to see exactly which skills to use and how.',
-  browseSkills: 'Browse all 13 skills →',
+  browseSkills: 'Browse all {n} skills →',
+  allSkillsSubtitle: '{n} superpowers skills across {c} categories',
+  contentVersion: 'Content matches superpowers v{v}, updated {d}',
+  skillCountUnit: '{n} skill|{n} skills',
+  resultsFor: '{n} result for|{n} results for',
   skillsUsed: 'Skills used',
   nextScenario: 'Next scenario',
   whenToUse: 'When to use',
@@ -44,6 +49,16 @@ const EN = {
 function ui(key) {
   if (state.lang === 'zh-TW') return state.translations.ui[key] || EN[key] || key
   return EN[key] || key
+}
+
+// Fill {placeholders}; for 'singular|plural' strings pick by vars.n
+function fmt(key, vars) {
+  let str = ui(key)
+  if (str.includes('|')) {
+    const [one, many] = str.split('|')
+    str = vars.n === 1 ? one : many
+  }
+  return str.replace(/\{(\w+)\}/g, (_, k) => vars[k] ?? '')
 }
 
 function trScenario(scenario, field) {
@@ -193,14 +208,16 @@ function setupNavSearch() {
 // ── Init ───────────────────────────────────────────────────────────────────
 async function init() {
   try {
-    const [scenariosRes, skillsRes, zhRes] = await Promise.all([
+    const [scenariosRes, skillsRes, zhRes, metaRes] = await Promise.all([
       fetch('/data/scenarios.json'),
       fetch('/data/skills.json'),
-      fetch('/data/zh-TW.json')
+      fetch('/data/zh-TW.json'),
+      fetch('/data/meta.json')
     ])
     state.scenarios = await scenariosRes.json()
     state.skills = await skillsRes.json()
     state.translations = await zhRes.json()
+    state.meta = await metaRes.json()
 
     const toggle = document.getElementById('lang-toggle')
     toggle.textContent = state.lang === 'en' ? '繁中' : 'EN'
@@ -220,8 +237,7 @@ async function init() {
 // ── Render: Home ───────────────────────────────────────────────────────────
 function renderHome(main) {
   const cards = state.scenarios.map(s => {
-    const n = s.skillCount
-    const skillWord = state.lang === 'zh-TW' ? `${n} 個技能` : `${n} skill${n !== 1 ? 's' : ''}`
+    const skillWord = fmt('skillCountUnit', { n: s.skillCount })
     return `
     <a href="#/scenario/${s.id}" class="scenario-card">
       <div class="scenario-icon">${escHtml(s.icon)}</div>
@@ -238,7 +254,8 @@ function renderHome(main) {
     </div>
     <div class="scenario-grid">${cards}</div>
     <div class="page-footer">
-      <a href="#/skills">${escHtml(ui('browseSkills'))}</a>
+      <a href="#/skills">${escHtml(fmt('browseSkills', { n: state.skills.length }))}</a>
+      <div class="version-note">${escHtml(fmt('contentVersion', { v: state.meta.superpowersVersion, d: state.meta.contentUpdated }))}</div>
     </div>`
 }
 
@@ -356,9 +373,7 @@ function renderSearch(main, q) {
     return
   }
 
-  const countLabel = state.lang === 'zh-TW'
-    ? `${results.length} 筆結果：<strong>${escHtml(q)}</strong>`
-    : `${results.length} result${results.length !== 1 ? 's' : ''} for <strong>${escHtml(q)}</strong>`
+  const countLabel = `${escHtml(fmt('resultsFor', { n: results.length }))} <strong>${escHtml(q)}</strong>`
 
   const scenarioItems = scenarios.map(s => `
     <a href="#/scenario/${s.id}" class="result-item">
@@ -406,14 +421,12 @@ function renderAllSkills(main) {
       </div>`
   }).join('')
 
-  const subtitle = state.lang === 'zh-TW'
-    ? `全部 13 個超能力技能，依 ${categories.length} 個類別整理`
-    : `13 superpowers skills across ${categories.length} categories`
+  const subtitle = fmt('allSkillsSubtitle', { n: state.skills.length, c: categories.length })
 
   main.innerHTML = `
     <div class="skills-page-header">
       <h1>${escHtml(ui('allSkillsH1'))}</h1>
-      <p>${subtitle}</p>
+      <p>${escHtml(subtitle)}</p>
     </div>
     ${groups}`
 }

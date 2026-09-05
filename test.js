@@ -1,10 +1,13 @@
 const http = require('http')
 const assert = require('assert')
-const path = require('path')
+const fs = require('fs')
 
 // Start server for testing
 process.env.PORT = '3001'
 const server = require('./index.js')
+
+const SKILL_COUNT = 14
+const SCENARIO_COUNT = 7
 
 async function get(url) {
   return new Promise((resolve, reject) => {
@@ -25,25 +28,25 @@ async function runTests() {
   assert.ok(index.body.includes('id="main"'), 'index.html should contain #main')
   console.log('✓ GET / returns 200 with #main')
 
-  const scenarios = await get('http://localhost:3001/data/scenarios.json')
-  assert.strictEqual(scenarios.status, 200, 'GET /data/scenarios.json should return 200')
-  assert.ok(!scenarios.body.includes('<html'), '/data/scenarios.json should not return HTML')
-  console.log('✓ GET /data/scenarios.json returns 200')
-
-  const skills = await get('http://localhost:3001/data/skills.json')
-  assert.strictEqual(skills.status, 200, 'GET /data/skills.json should return 200')
-  assert.ok(!skills.body.includes('<html'), '/data/skills.json should not return HTML')
-  console.log('✓ GET /data/skills.json returns 200')
+  for (const file of ['scenarios.json', 'skills.json', 'zh-TW.json', 'meta.json']) {
+    const res = await get(`http://localhost:3001/data/${file}`)
+    assert.strictEqual(res.status, 200, `GET /data/${file} should return 200`)
+    assert.ok(!res.body.includes('<html'), `/data/${file} should not return HTML`)
+    console.log(`✓ GET /data/${file} returns 200`)
+  }
 
   console.log('\nAll tests passed.')
 }
 
+function loadJson(file) {
+  return JSON.parse(fs.readFileSync(`./data/${file}`, 'utf8'))
+}
+
 // Validate scenarios.json structure
 function validateScenarios() {
-  const fs = require('fs')
-  const scenarios = JSON.parse(fs.readFileSync('./data/scenarios.json', 'utf8'))
+  const scenarios = loadJson('scenarios.json')
   assert.ok(Array.isArray(scenarios), 'scenarios must be an array')
-  assert.strictEqual(scenarios.length, 7, 'must have exactly 7 scenarios')
+  assert.strictEqual(scenarios.length, SCENARIO_COUNT, `must have exactly ${SCENARIO_COUNT} scenarios`)
   scenarios.forEach((s, i) => {
     assert.ok(s.id, `scenario[${i}] must have id`)
     assert.ok(s.icon, `scenario[${i}] must have icon`)
@@ -58,15 +61,14 @@ function validateScenarios() {
       assert.ok(step.whatClaudeDoes, `scenario[${i}].steps[${j}] must have whatClaudeDoes`)
     })
   })
-  console.log('✓ scenarios.json valid — 7 scenarios, all steps valid')
+  console.log(`✓ scenarios.json valid — ${SCENARIO_COUNT} scenarios, all steps valid`)
+  return scenarios
 }
-validateScenarios()
 
 function validateSkills() {
-  const fs = require('fs')
-  const skills = JSON.parse(fs.readFileSync('./data/skills.json', 'utf8'))
+  const skills = loadJson('skills.json')
   assert.ok(Array.isArray(skills), 'skills must be an array')
-  assert.strictEqual(skills.length, 13, 'must have exactly 13 skills')
+  assert.strictEqual(skills.length, SKILL_COUNT, `must have exactly ${SKILL_COUNT} skills`)
   skills.forEach((s, i) => {
     assert.ok(s.id, `skill[${i}] must have id`)
     assert.ok(s.name, `skill[${i}] must have name`)
@@ -75,9 +77,65 @@ function validateSkills() {
     assert.ok(s.description, `skill[${i}] must have description`)
     assert.ok(Array.isArray(s.whenToUse), `skill[${i}] must have whenToUse array`)
   })
-  console.log('✓ skills.json valid — 13 skills, all fields present')
+  console.log(`✓ skills.json valid — ${SKILL_COUNT} skills, all fields present`)
+  return skills
 }
-validateSkills()
+
+// Every scenario/skill referenced from the other file must exist
+function validateCrossRefs(scenarios, skills) {
+  const scenarioIds = new Set(scenarios.map(s => s.id))
+  const skillIds = new Set(skills.map(s => s.id))
+  scenarios.forEach(s => {
+    ;(s.skillIds || []).forEach(id => assert.ok(skillIds.has(id), `scenario ${s.id} references unknown skill ${id}`))
+    if (s.nextScenario) assert.ok(scenarioIds.has(s.nextScenario), `scenario ${s.id} has unknown nextScenario ${s.nextScenario}`)
+  })
+  skills.forEach(s => {
+    ;(s.usedInScenarios || []).forEach(id => assert.ok(scenarioIds.has(id), `skill ${s.id} references unknown scenario ${id}`))
+  })
+  console.log('✓ cross-references between scenarios and skills are valid')
+}
+
+// Every scenario, step, skill and phase must have a zh-TW translation
+function validateTranslations(scenarios, skills) {
+  const zh = loadJson('zh-TW.json')
+  assert.ok(zh.ui && zh.categories && zh.scenarios && zh.skills, 'zh-TW.json must have ui, categories, scenarios, skills')
+
+  scenarios.forEach(s => {
+    const t = zh.scenarios[s.id]
+    assert.ok(t, `zh-TW missing scenario ${s.id}`)
+    for (const f of ['title', 'description', 'estimatedTime']) assert.ok(t[f], `zh-TW scenario ${s.id} missing ${f}`)
+    assert.strictEqual((t.steps || []).length, s.steps.length, `zh-TW scenario ${s.id} step count mismatch`)
+    s.steps.forEach((step, i) => {
+      for (const f of ['title', 'instruction', 'whatClaudeDoes', 'whatToExpect']) {
+        assert.ok(t.steps[i][f], `zh-TW scenario ${s.id} step ${i + 1} missing ${f}`)
+      }
+    })
+    assert.ok(zh.categories, 'categories')
+  })
+
+  skills.forEach(s => {
+    const t = zh.skills[s.id]
+    assert.ok(t, `zh-TW missing skill ${s.id}`)
+    assert.ok(t.description, `zh-TW skill ${s.id} missing description`)
+    assert.strictEqual((t.whenToUse || []).length, s.whenToUse.length, `zh-TW skill ${s.id} whenToUse count mismatch`)
+    if (s.phases) assert.strictEqual((t.phases || []).length, s.phases.length, `zh-TW skill ${s.id} phase count mismatch`)
+    assert.ok(zh.categories[s.category], `zh-TW missing category ${s.category}`)
+  })
+  console.log('✓ zh-TW.json covers every scenario, step, skill and phase')
+}
+
+function validateMeta() {
+  const meta = loadJson('meta.json')
+  assert.ok(/^\d+\.\d+\.\d+$/.test(meta.superpowersVersion), 'meta.json must have superpowersVersion like 6.3.0')
+  assert.ok(/^\d{4}-\d{2}-\d{2}$/.test(meta.contentUpdated), 'meta.json must have contentUpdated as YYYY-MM-DD')
+  console.log(`✓ meta.json valid — content matches superpowers v${meta.superpowersVersion}`)
+}
+
+const scenarios = validateScenarios()
+const skills = validateSkills()
+validateCrossRefs(scenarios, skills)
+validateTranslations(scenarios, skills)
+validateMeta()
 
 runTests()
   .then(() => server.close())

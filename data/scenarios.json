@@ -7,31 +7,35 @@
     "skillCount": 3,
     "estimatedTime": "~20 min",
     "nextScenario": "building-a-feature",
-    "skillIds": ["brainstorming", "writing-plans", "using-git-worktrees"],
+    "skillIds": [
+      "brainstorming",
+      "writing-plans",
+      "using-git-worktrees"
+    ],
     "steps": [
       {
         "number": 1,
         "title": "Start the brainstorming skill",
         "instruction": "Type this in Claude Code:",
         "command": "/superpowers:brainstorming",
-        "whatClaudeDoes": "Asks you questions one at a time to understand what you're building — purpose, constraints, success criteria. Proposes 2–3 approaches with trade-offs, then presents a design spec in sections for your approval.",
-        "whatToExpect": "3–6 questions about your idea, each narrowing the design. For UI questions, Claude may open a browser to show mockups."
+        "whatClaudeDoes": "Classifies your request as a spike (feasibility question), bounded (small change to existing code), or architectural (new project or restructuring), and says which out loud so you can override. Then asks questions one at a time to understand purpose, constraints, and success criteria.",
+        "whatToExpect": "A one-line classification, then 1–6 questions depending on the path. For a bounded change you get a short design in chat. For architectural work Claude proposes 2–3 approaches and may offer a browser-based visual companion for mockups."
       },
       {
         "number": 2,
         "title": "Answer Claude's questions",
         "instruction": "No command needed — just reply in the terminal.",
         "command": null,
-        "whatClaudeDoes": "Asks one question at a time. Proposes 2–3 implementation approaches and asks you to pick one before writing the spec.",
-        "whatToExpect": "Claude presents the design spec section by section and asks for approval after each."
+        "whatClaudeDoes": "Asks one question at a time, preferring multiple choice. For architectural work it proposes 2–3 approaches with trade-offs and a recommendation, then presents the design section by section.",
+        "whatToExpect": "Claude asks for approval after each design section. Nothing is implemented until you say yes, even for a two-sentence bounded design."
       },
       {
         "number": 3,
         "title": "Approve the design spec",
         "instruction": "Review each section and say yes, or ask for changes.",
         "command": null,
-        "whatClaudeDoes": "Saves the approved spec to docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md, then automatically invokes the writing-plans skill.",
-        "whatToExpect": "After approval, Claude transitions to writing an implementation plan broken into 2–5 minute tasks.",
+        "whatClaudeDoes": "For architectural work, saves the approved spec to docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md, self-reviews it for placeholders and contradictions, asks you to review the file, then invokes writing-plans. Bounded work skips the spec and goes straight to implementation.",
+        "whatToExpect": "After approval, Claude writes an implementation plan where each task has its own test cycle and bite-sized 2–5 minute steps.",
         "saves": "docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md"
       }
     ]
@@ -44,7 +48,12 @@
     "skillCount": 4,
     "estimatedTime": "~45 min",
     "nextScenario": "code-review",
-    "skillIds": ["using-git-worktrees", "writing-plans", "subagent-driven-development", "test-driven-development"],
+    "skillIds": [
+      "using-git-worktrees",
+      "writing-plans",
+      "subagent-driven-development",
+      "test-driven-development"
+    ],
     "steps": [
       {
         "number": 1,
@@ -59,8 +68,8 @@
         "title": "Build with subagent-driven development",
         "instruction": "Type this in Claude Code (after an approved plan exists):",
         "command": "/superpowers:subagent-driven-development",
-        "whatClaudeDoes": "Dispatches a fresh subagent per task from your implementation plan. Each task gets a two-stage review: spec compliance first, then code quality. Can run autonomously for an hour or more.",
-        "whatToExpect": "Claude works through each task in the plan. You'll see progress updates. It pauses to flag critical issues that need your input."
+        "whatClaudeDoes": "Dispatches a fresh implementer subagent per task from your plan. After each task a task reviewer checks spec compliance and code quality; findings loop back for up to five fix rounds. When all tasks are done, a whole-branch review runs before handing off to finishing-a-development-branch.",
+        "whatToExpect": "Claude works through each task in the plan and picks the cheapest model that fits each role. You will see progress updates. It stops to ask only when a decision is genuinely yours to make."
       },
       {
         "number": 3,
@@ -80,15 +89,18 @@
     "skillCount": 2,
     "estimatedTime": "~15 min",
     "nextScenario": "code-review",
-    "skillIds": ["systematic-debugging", "verification-before-completion"],
+    "skillIds": [
+      "systematic-debugging",
+      "verification-before-completion"
+    ],
     "steps": [
       {
         "number": 1,
         "title": "Start systematic debugging",
         "instruction": "Type this in Claude Code when you hit a bug:",
         "command": "/superpowers:systematic-debugging",
-        "whatClaudeDoes": "Runs a 4-phase root cause process: (1) Observe — reproduce and capture exact symptoms, (2) Hypothesize — list possible causes ranked by likelihood, (3) Verify — test each hypothesis with minimal changes, (4) Fix & confirm — apply minimal fix and verify root cause is resolved.",
-        "whatToExpect": "Claude will not propose a fix until it has evidence identifying the root cause. Prevents wasted work from fixing symptoms instead of causes."
+        "whatClaudeDoes": "Runs a 4-phase root cause process: (1) Root cause investigation — read errors fully, reproduce, check recent changes, trace bad data to its source, (2) Pattern analysis — compare against working code, (3) Hypothesis and testing — one specific hypothesis, tested with the smallest change, (4) Implementation — write a failing test, apply a single fix, verify.",
+        "whatToExpect": "Claude will not propose a fix until it has evidence identifying the root cause. If three fixes fail it stops and questions the architecture instead of trying a fourth."
       },
       {
         "number": 2,
@@ -108,15 +120,18 @@
     "skillCount": 2,
     "estimatedTime": "~10 min",
     "nextScenario": "merging-and-shipping",
-    "skillIds": ["requesting-code-review", "receiving-code-review"],
+    "skillIds": [
+      "requesting-code-review",
+      "receiving-code-review"
+    ],
     "steps": [
       {
         "number": 1,
         "title": "Request a code review",
         "instruction": "Type this in Claude Code after writing code:",
         "command": "/superpowers:requesting-code-review",
-        "whatClaudeDoes": "Runs a pre-review checklist: reviews code against the plan, checks for security issues, correctness bugs, and code quality. Reports findings by severity — CRITICAL blocks progress, HIGH should fix before merge.",
-        "whatToExpect": "A structured review report. CRITICAL issues must be fixed before continuing. HIGH issues are flagged but don't block."
+        "whatClaudeDoes": "Dispatches a code-reviewer subagent with the plan and the commit range. The reviewer reports strengths, issues, and recommendations, with issues sorted by severity: Critical, Important, Minor.",
+        "whatToExpect": "A structured review report. Critical issues are fixed immediately, Important ones before proceeding, Minor ones are noted for later. Claude pushes back with reasoning if the reviewer is wrong."
       },
       {
         "number": 2,
@@ -132,18 +147,20 @@
     "id": "merging-and-shipping",
     "icon": "🔀",
     "title": "Merging & shipping",
-    "description": "Wrap up a development branch cleanly — merge, PR, keep, or discard",
+    "description": "Wrap up a development branch cleanly — merge, PR, or keep",
     "skillCount": 1,
     "estimatedTime": "~5 min",
     "nextScenario": null,
-    "skillIds": ["finishing-a-development-branch"],
+    "skillIds": [
+      "finishing-a-development-branch"
+    ],
     "steps": [
       {
         "number": 1,
         "title": "Finish the development branch",
         "instruction": "Type this when all tasks are complete and tests pass:",
         "command": "/superpowers:finishing-a-development-branch",
-        "whatClaudeDoes": "Verifies all tests pass, then presents four options: (1) Merge to main, (2) Open a pull request, (3) Keep the branch for later, (4) Discard the branch. Cleans up the git worktree after your choice.",
+        "whatClaudeDoes": "Verifies all tests pass, then presents three options: (1) Merge locally into the base branch, (2) Push and open a pull request, (3) Keep the branch as-is for later. Discards the work only if you ask. Cleans up the git worktree after your choice.",
         "whatToExpect": "A clear decision point with context on each option. Claude won't merge until it confirms tests are passing."
       }
     ]
@@ -152,11 +169,13 @@
     "id": "understanding-a-skill",
     "icon": "📚",
     "title": "Understanding a skill",
-    "description": "Deep-dive into any of the 13 superpowers skills — when to use it, how it works, what to type",
-    "skillCount": 13,
+    "description": "Deep-dive into any superpowers skill — when to use it, how it works, what to type",
+    "skillCount": 14,
     "estimatedTime": "self-paced",
     "nextScenario": null,
-    "skillIds": [],
+    "skillIds": [
+      "using-superpowers"
+    ],
     "steps": [
       {
         "number": 1,
@@ -164,7 +183,7 @@
         "instruction": "Click the link below or search by skill name:",
         "command": null,
         "whatClaudeDoes": "Not applicable — this scenario links directly to the skill browser.",
-        "whatToExpect": "All 13 skills listed by category: Planning, Building, Testing, Debugging, Review, Git, Meta.",
+        "whatToExpect": "Every skill listed by category: Planning, Building, Testing, Debugging, Review, Git, Meta. Start with using-superpowers, the entry point that decides when the others are invoked.",
         "browseLink": "#/skills"
       },
       {
@@ -185,7 +204,9 @@
     "skillCount": 1,
     "estimatedTime": "~30 min",
     "nextScenario": null,
-    "skillIds": ["writing-skills"],
+    "skillIds": [
+      "writing-skills"
+    ],
     "steps": [
       {
         "number": 1,
@@ -193,7 +214,7 @@
         "instruction": "Type this in Claude Code:",
         "command": "/superpowers:writing-skills",
         "whatClaudeDoes": "Walks you through creating a new skill following superpowers best practices. Covers skill structure, writing clear trigger conditions, and testing methodology including adversarial pressure testing.",
-        "whatToExpect": "A guided process for designing, writing, and testing a custom skill. The skill is saved to your ~/.claude/skills/ directory and is immediately available."
+        "whatToExpect": "A guided process for designing, writing, and testing a custom skill. Personal skills live in ~/.claude/skills/<skill-name>/SKILL.md and are available immediately."
       },
       {
         "number": 2,

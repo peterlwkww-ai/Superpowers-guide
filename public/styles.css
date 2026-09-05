@@ -271,3 +271,6 @@ body {
 @media (min-width: 481px) and (max-width: 768px) {
   .scenario-grid { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* ── Version note ── */
+.version-note { margin-top: 8px; font-size: 11px; color: var(--text-muted); }

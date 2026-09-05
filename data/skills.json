@@ -4,27 +4,52 @@
     "name": "brainstorming",
     "command": "/superpowers:brainstorming",
     "category": "Planning",
-    "description": "Turns rough ideas into validated design specs through Socratic dialogue. Questions one at a time, proposes 2–3 approaches, presents design in sections for approval.",
+    "description": "Turns rough ideas into validated designs through dialogue. First classifies the request as a spike, a bounded change, or architectural work, then scales the process to match: a quick probe, a short design in chat, or a full written spec. Nothing is implemented until you approve.",
     "whenToUse": [
       "Starting any new feature or project",
       "Before writing any code",
       "Turning a rough idea into a spec",
       "Any time you type 'let's build'"
     ],
-    "usedInScenarios": ["designing-a-feature"]
+    "usedInScenarios": [
+      "designing-a-feature"
+    ],
+    "phases": [
+      {
+        "number": 1,
+        "label": "Spike",
+        "color": "#e3b341",
+        "detail": "A feasibility question. Claude states what it will try, investigates cheaply, and reports a recommendation. Any code is throwaway."
+      },
+      {
+        "number": 2,
+        "label": "Bounded",
+        "color": "#238636",
+        "detail": "A well-scoped change to code that already exists. A few clarifying questions, a short design in chat, then your approval. No spec file."
+      },
+      {
+        "number": 3,
+        "label": "Architectural",
+        "color": "#8957e5",
+        "detail": "New projects or restructuring. Questions one at a time, 2–3 approaches, a sectioned design, then a written spec and an implementation plan."
+      }
+    ]
   },
   {
     "id": "writing-plans",
     "name": "writing-plans",
     "command": "/superpowers:writing-plans",
     "category": "Planning",
-    "description": "Breaks an approved design spec into bite-sized tasks (2–5 min each). Every task has exact file paths, complete code, and verification steps. No placeholders, no TBDs.",
+    "description": "Breaks an approved design into tasks, each with its own test cycle and an independently testable deliverable. Steps inside a task are bite-sized (2–5 min) with exact file paths, complete code, and verification commands. No placeholders, no TBDs.",
     "whenToUse": [
       "After brainstorming produces an approved spec",
       "Before implementing a feature",
       "Breaking complex work into trackable tasks"
     ],
-    "usedInScenarios": ["designing-a-feature", "building-a-feature"]
+    "usedInScenarios": [
+      "designing-a-feature",
+      "building-a-feature"
+    ]
   },
   {
     "id": "using-git-worktrees",
@@ -37,39 +62,65 @@
       "When you need isolation from current workspace",
       "Before executing an implementation plan"
     ],
-    "usedInScenarios": ["building-a-feature"]
+    "usedInScenarios": [
+      "building-a-feature"
+    ]
   },
   {
     "id": "subagent-driven-development",
     "name": "subagent-driven-development",
     "command": "/superpowers:subagent-driven-development",
     "category": "Building",
-    "description": "Dispatches a fresh subagent per task from the implementation plan. Each task gets two-stage review: spec compliance first, then code quality. Can run autonomously for hours.",
+    "description": "Dispatches a fresh subagent per task from the implementation plan. A task reviewer checks spec compliance and code quality after each task, with up to five fix rounds. Ends with a whole-branch review. Can run autonomously for hours.",
     "whenToUse": [
       "Executing an implementation plan",
       "After writing-plans completes",
       "For autonomous multi-task implementation"
     ],
     "phases": [
-      { "number": 1, "label": "Read spec", "color": "#4a9eff", "detail": "Subagent reads the full implementation plan and the specific task." },
-      { "number": 2, "label": "Implement", "color": "#238636", "detail": "Writes code following TDD — test first, then minimal implementation." },
-      { "number": 3, "label": "Spec review", "color": "#8957e5", "detail": "Checks: does the implementation match what the plan specified?" },
-      { "number": 4, "label": "Quality review", "color": "#e3b341", "detail": "Checks code quality independently — readability, correctness, security." }
+      {
+        "number": 1,
+        "label": "Implement",
+        "color": "#4a9eff",
+        "detail": "A fresh implementer subagent reads the task, writes code with TDD, tests, commits, and self-reviews."
+      },
+      {
+        "number": 2,
+        "label": "Task review",
+        "color": "#238636",
+        "detail": "A task reviewer checks the diff for spec compliance and code quality in one pass."
+      },
+      {
+        "number": 3,
+        "label": "Fix loop",
+        "color": "#8957e5",
+        "detail": "Findings go back to the implementer for up to five rounds. Later rounds escalate to a fresh, more capable subagent."
+      },
+      {
+        "number": 4,
+        "label": "Final review",
+        "color": "#e3b341",
+        "detail": "When every task is done, a whole-branch code review runs before handing off to finishing-a-development-branch."
+      }
     ],
-    "usedInScenarios": ["building-a-feature"]
+    "usedInScenarios": [
+      "building-a-feature"
+    ]
   },
   {
     "id": "executing-plans",
     "name": "executing-plans",
     "command": "/superpowers:executing-plans",
     "category": "Building",
-    "description": "Alternative to subagent-driven-development. Executes plan tasks in the current session in batches, with human review checkpoints between batches.",
+    "description": "Executes an implementation plan in the current session, task by task, stopping to ask whenever a blocker or unclear instruction appears. Intended for environments without subagents; when subagents are available, subagent-driven-development is preferred.",
     "whenToUse": [
-      "When you want checkpoints between task batches",
-      "Alternative to subagent-driven-development",
-      "When you prefer staying in the current session"
+      "Executing a plan when subagents are not available",
+      "When you want to follow the plan step by step yourself",
+      "Alternative to subagent-driven-development"
     ],
-    "usedInScenarios": ["building-a-feature"]
+    "usedInScenarios": [
+      "building-a-feature"
+    ]
   },
   {
     "id": "dispatching-parallel-agents",
@@ -82,7 +133,9 @@
       "Tasks with no shared state",
       "When sequential execution would be slow"
     ],
-    "usedInScenarios": ["building-a-feature"]
+    "usedInScenarios": [
+      "building-a-feature"
+    ]
   },
   {
     "id": "test-driven-development",
@@ -96,18 +149,35 @@
       "Any time implementation code is written"
     ],
     "phases": [
-      { "number": 1, "label": "RED", "color": "#f78166", "detail": "Write a failing test that describes the desired behavior. Run it — confirm it fails." },
-      { "number": 2, "label": "GREEN", "color": "#238636", "detail": "Write the minimal implementation to make the test pass. No more than needed." },
-      { "number": 3, "label": "REFACTOR", "color": "#4a9eff", "detail": "Clean up the code while keeping tests green. Improve names, remove duplication." }
+      {
+        "number": 1,
+        "label": "RED",
+        "color": "#f78166",
+        "detail": "Write a failing test that describes the desired behavior. Run it — confirm it fails."
+      },
+      {
+        "number": 2,
+        "label": "GREEN",
+        "color": "#238636",
+        "detail": "Write the minimal implementation to make the test pass. No more than needed."
+      },
+      {
+        "number": 3,
+        "label": "REFACTOR",
+        "color": "#4a9eff",
+        "detail": "Clean up the code while keeping tests green. Improve names, remove duplication."
+      }
     ],
-    "usedInScenarios": ["building-a-feature"]
+    "usedInScenarios": [
+      "building-a-feature"
+    ]
   },
   {
     "id": "systematic-debugging",
     "name": "systematic-debugging",
     "command": "/superpowers:systematic-debugging",
     "category": "Debugging",
-    "description": "4-phase root cause process. Prevents guessing, wasted fixes, and recurring bugs by requiring evidence before proposing any solution.",
+    "description": "4-phase root cause process. No fixes without root cause investigation first. If three fixes fail, Claude stops and questions the architecture instead of trying a fourth.",
     "whenToUse": [
       "Any bug or test failure",
       "Unexpected behavior",
@@ -115,39 +185,92 @@
       "When the same bug keeps recurring"
     ],
     "phases": [
-      { "number": 1, "label": "Observe", "color": "#4a9eff", "detail": "Reproduce the bug. Capture exact symptoms, inputs, and outputs. No theories yet." },
-      { "number": 2, "label": "Hypothesize", "color": "#238636", "detail": "List all possible causes. Rank by likelihood and ease of verification." },
-      { "number": 3, "label": "Verify", "color": "#8957e5", "detail": "Test each hypothesis with minimal changes. Eliminate causes with evidence." },
-      { "number": 4, "label": "Fix & confirm", "color": "#f78166", "detail": "Apply minimal fix. Verify it resolves the root cause, not just the symptoms." }
+      {
+        "number": 1,
+        "label": "Root cause investigation",
+        "color": "#4a9eff",
+        "detail": "Read errors fully, reproduce consistently, check recent changes, add diagnostics at component boundaries, trace bad data back to its source."
+      },
+      {
+        "number": 2,
+        "label": "Pattern analysis",
+        "color": "#238636",
+        "detail": "Find working examples in the same codebase, read reference implementations completely, and list every difference from the broken code."
+      },
+      {
+        "number": 3,
+        "label": "Hypothesis and testing",
+        "color": "#8957e5",
+        "detail": "State one specific hypothesis, test it with the smallest possible change, one variable at a time. Wrong? Form a new hypothesis, do not stack fixes."
+      },
+      {
+        "number": 4,
+        "label": "Implementation",
+        "color": "#f78166",
+        "detail": "Write a failing test that reproduces the bug, apply a single fix at the root cause, then verify with verification-before-completion."
+      }
     ],
-    "usedInScenarios": ["debugging"]
+    "usedInScenarios": [
+      "debugging"
+    ]
   },
   {
     "id": "verification-before-completion",
     "name": "verification-before-completion",
     "command": "/superpowers:verification-before-completion",
     "category": "Debugging",
-    "description": "Requires running actual verification commands and confirming real output before claiming work is done. Evidence before assertions — always.",
+    "description": "Requires running the full verification command and reading its real output before claiming anything is done, fixed, or passing. Evidence before assertions, always.",
     "whenToUse": [
       "Before claiming work is complete",
       "Before committing or creating PRs",
       "After fixing a bug",
       "Before saying 'it should work now'"
     ],
-    "usedInScenarios": ["debugging", "building-a-feature"]
+    "usedInScenarios": [
+      "debugging",
+      "building-a-feature"
+    ],
+    "phases": [
+      {
+        "number": 1,
+        "label": "Identify",
+        "color": "#4a9eff",
+        "detail": "Which command proves this claim?"
+      },
+      {
+        "number": 2,
+        "label": "Run",
+        "color": "#238636",
+        "detail": "Execute the full command, fresh and complete."
+      },
+      {
+        "number": 3,
+        "label": "Read",
+        "color": "#8957e5",
+        "detail": "Read the whole output. Check the exit code. Count the failures."
+      },
+      {
+        "number": 4,
+        "label": "Claim",
+        "color": "#f78166",
+        "detail": "Only if the output confirms it, state the claim together with the evidence."
+      }
+    ]
   },
   {
     "id": "requesting-code-review",
     "name": "requesting-code-review",
     "command": "/superpowers:requesting-code-review",
     "category": "Review",
-    "description": "Pre-review checklist that reviews code against the implementation plan. Reports findings by severity: CRITICAL blocks, HIGH warns, MEDIUM informs.",
+    "description": "Dispatches a code-reviewer subagent that checks the changes against the plan or requirements. Reports strengths and issues by severity: Critical must be fixed now, Important before proceeding, Minor noted for later.",
     "whenToUse": [
       "After writing or modifying code",
       "Between implementation tasks in a plan",
       "Before merging to main"
     ],
-    "usedInScenarios": ["code-review"]
+    "usedInScenarios": [
+      "code-review"
+    ]
   },
   {
     "id": "receiving-code-review",
@@ -160,32 +283,53 @@
       "Before implementing review suggestions",
       "When feedback seems unclear or questionable"
     ],
-    "usedInScenarios": ["code-review"]
+    "usedInScenarios": [
+      "code-review"
+    ]
   },
   {
     "id": "finishing-a-development-branch",
     "name": "finishing-a-development-branch",
     "command": "/superpowers:finishing-a-development-branch",
     "category": "Git",
-    "description": "Verifies tests pass, presents structured options (merge/PR/keep/discard), and cleans up the git worktree. Won't merge until tests are confirmed green.",
+    "description": "Verifies tests pass, then presents three options: merge locally, push and open a PR, or keep the branch as-is. Discards only if you ask. Cleans up the worktree afterwards. Won't merge until tests are confirmed green.",
     "whenToUse": [
       "All tasks in the plan are complete",
       "Tests are passing",
       "Ready to integrate the work"
     ],
-    "usedInScenarios": ["merging-and-shipping"]
+    "usedInScenarios": [
+      "merging-and-shipping"
+    ]
   },
   {
     "id": "writing-skills",
     "name": "writing-skills",
     "command": "/superpowers:writing-skills",
     "category": "Meta",
-    "description": "Complete guide for creating, testing, and deploying new skills. Includes adversarial pressure testing methodology to ensure skills trigger reliably.",
+    "description": "Complete guide for creating, testing, and deploying new skills. Covers skill types, SKILL.md structure, writing descriptions that trigger reliably, and adversarial pressure testing with subagents before deployment.",
     "whenToUse": [
       "Creating project-specific workflows",
       "Extending superpowers for your domain",
       "After mastering the core superpowers workflow"
     ],
-    "usedInScenarios": ["writing-a-custom-skill"]
+    "usedInScenarios": [
+      "writing-a-custom-skill"
+    ]
+  },
+  {
+    "id": "using-superpowers",
+    "name": "using-superpowers",
+    "command": "/superpowers:using-superpowers",
+    "category": "Meta",
+    "description": "The entry point that loads automatically at the start of every conversation. Establishes the rule that if a skill might apply, Claude must invoke it before responding, even before asking a clarifying question. Process skills like brainstorming and systematic-debugging come first, then implementation skills.",
+    "whenToUse": [
+      "Loaded automatically at session start",
+      "When you want to understand why Claude keeps invoking skills",
+      "When Claude skips a skill it should have used"
+    ],
+    "usedInScenarios": [
+      "understanding-a-skill"
+    ]
   }
 ]

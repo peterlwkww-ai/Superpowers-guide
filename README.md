@@ -2,7 +2,9 @@
 
 **Language / 語言：** English | [繁體中文](#繁體中文)
 
-A local web app that teaches you how to build great projects using the [Superpowers Claude plugin](https://github.com/anthropics/claude-code). Browse all 7 lifecycle scenarios and 13 skills with step-by-step walkthroughs, copy buttons, and live search. Supports **English** and **繁體中文 (Traditional Chinese)**.
+A local web app that teaches you how to build great projects using the [Superpowers Claude plugin](https://github.com/obra/superpowers). Browse all 7 lifecycle scenarios and 14 skills with step-by-step walkthroughs, copy buttons, and live search. Supports **English** and **繁體中文 (Traditional Chinese)**.
+
+Content matches **superpowers v6.3.0**. See [CHANGELOG.md](CHANGELOG.md) for what changed, when, and by whom.
 
 ![screenshot](https://raw.githubusercontent.com/peterlwkww-ai/Superpowers-guide/master/docs/screenshot.png)
 
@@ -69,7 +71,7 @@ Go to **http://localhost:3000**
 | **Browse scenarios** | Click any card on the home page |
 | **Copy a command** | Click the **Copy** button next to any slash command |
 | **Search** | Type in the search bar (top right) |
-| **Browse all skills** | Click "Browse all 13 skills →" at the bottom of the home page |
+| **Browse all skills** | Click "Browse all 14 skills →" at the bottom of the home page |
 | **Switch language** | Click **繁中** (or **EN**) in the top-left corner |
 
 ---
@@ -152,7 +154,9 @@ npm start
 
 **Language / 語言：** [English](#superpowers-guide) | 繁體中文
 
-本地端網頁應用程式，教你如何使用 [Superpowers Claude 外掛](https://github.com/anthropics/claude-code) 打造出色的專案。瀏覽 7 個開發情境與 13 個技能，包含逐步操作說明、一鍵複製指令及即時搜尋功能。支援**英文**與**繁體中文**介面切換。
+本地端網頁應用程式，教你如何使用 [Superpowers Claude 外掛](https://github.com/obra/superpowers) 打造出色的專案。瀏覽 7 個開發情境與 14 個技能，包含逐步操作說明、一鍵複製指令及即時搜尋功能。支援**英文**與**繁體中文**介面切換。
+
+內容對應 **superpowers v6.3.0**。變更紀錄（日期、修改者、內容）請見 [CHANGELOG.md](CHANGELOG.md)。
 
 ---
 
@@ -217,7 +221,7 @@ Superpowers Guide running at http://localhost:3000
 | **瀏覽情境** | 點擊首頁任一卡片 |
 | **複製指令** | 點擊任一斜線指令旁的**複製**按鈕 |
 | **搜尋** | 在頂部搜尋欄輸入關鍵字 |
-| **瀏覽所有技能** | 點擊首頁底部的「瀏覽全部 13 個技能 →」 |
+| **瀏覽所有技能** | 點擊首頁底部的「瀏覽全部 14 個技能 →」 |
 | **切換語言** | 點擊左上角的**繁中**（或 **EN**）按鈕 |
 
 ---
