@@ -35,11 +35,28 @@ async function runTests() {
     console.log(`✓ GET /data/${file} returns 200`)
   }
 
+  const fuse = await get('http://localhost:3001/vendor/fuse.mjs')
+  assert.strictEqual(fuse.status, 200, 'GET /vendor/fuse.mjs should return 200')
+  assert.ok(fuse.body.includes('Fuse'), '/vendor/fuse.mjs should be the Fuse.js bundle')
+  console.log('✓ GET /vendor/fuse.mjs returns 200')
+
   console.log('\nAll tests passed.')
 }
 
+// public/ must be deployable as a static site under any base path
+// (GitHub Pages serves it from /Superpowers-guide/), so no root-absolute URLs.
+function validateStaticPaths() {
+  const html = fs.readFileSync('./public/index.html', 'utf8')
+  const js = fs.readFileSync('./public/app.js', 'utf8')
+  assert.ok(!/(?:href|src)="\/(?!\/)/.test(html), 'index.html must not use root-absolute href/src')
+  assert.ok(!/fetch\('\//.test(js), 'app.js must not fetch root-absolute paths')
+  assert.ok(!/from '\//.test(js), 'app.js must not import root-absolute paths')
+  assert.ok(fs.existsSync('./public/vendor/fuse.mjs'), 'public/vendor/fuse.mjs must be vendored')
+  console.log('✓ public/ uses relative paths and vendors Fuse.js')
+}
+
 function loadJson(file) {
-  return JSON.parse(fs.readFileSync(`./data/${file}`, 'utf8'))
+  return JSON.parse(fs.readFileSync(`./public/data/${file}`, 'utf8'))
 }
 
 // Validate scenarios.json structure
@@ -136,6 +153,7 @@ const skills = validateSkills()
 validateCrossRefs(scenarios, skills)
 validateTranslations(scenarios, skills)
 validateMeta()
+validateStaticPaths()
 
 runTests()
   .then(() => server.close())

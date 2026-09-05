@@ -1,4 +1,4 @@
-import Fuse from '/vendor/fuse.mjs'
+import Fuse from './vendor/fuse.mjs'
 
 // ── State ──────────────────────────────────────────────────────────────────
 const state = {
@@ -248,10 +248,10 @@ function setupNavSearch() {
 async function init() {
   try {
     const [scenariosRes, skillsRes, zhRes, metaRes] = await Promise.all([
-      fetch('/data/scenarios.json'),
-      fetch('/data/skills.json'),
-      fetch('/data/zh-TW.json'),
-      fetch('/data/meta.json')
+      fetch('./data/scenarios.json'),
+      fetch('./data/skills.json'),
+      fetch('./data/zh-TW.json'),
+      fetch('./data/meta.json')
     ])
     state.scenarios = await scenariosRes.json()
     state.skills = await skillsRes.json()

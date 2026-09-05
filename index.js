@@ -1,12 +1,12 @@
 const express = require('express')
 const path = require('path')
 
+// public/ is a self-contained static site (also deployed to GitHub Pages).
+// Express only serves it locally and falls back to index.html for the SPA.
 const app = express()
 const PORT = process.env.PORT || 3000
 
 app.use(express.static(path.join(__dirname, 'public')))
-app.use('/data', express.static(path.join(__dirname, 'data')))
-app.use('/vendor', express.static(path.join(__dirname, 'node_modules/fuse.js/dist')))
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'))

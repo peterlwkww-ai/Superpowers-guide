@@ -6,6 +6,11 @@ A local web app that teaches you how to build great projects using the [Superpow
 
 Content matches **superpowers v6.3.0**. See [CHANGELOG.md](CHANGELOG.md) for what changed, when, and by whom.
 
+**Two ways to use it:**
+
+- **Online, nothing to install:** https://peterlwkww-ai.github.io/Superpowers-guide/
+- **Locally:** clone and `npm start` (steps below). Useful offline or when editing the content.
+
 ![screenshot](https://raw.githubusercontent.com/peterlwkww-ai/Superpowers-guide/master/docs/screenshot.png)
 
 ---
@@ -143,9 +148,24 @@ npm start
 
 ## Tech Stack
 
-- **Node.js + Express** — serves the app locally
+- **Node.js + Express** — serves `public/` locally
 - **Vanilla JS + CSS** — no build step required
-- **Fuse.js** — fuzzy search
+- **Fuse.js** — fuzzy search, vendored in `public/vendor/`
+
+`public/` is a self-contained static site. Every push to `master` runs the tests and deploys it to GitHub Pages via `.github/workflows/pages.yml`.
+
+## Editing the content
+
+All text lives in JSON under `public/data/`:
+
+| File | Contents |
+|---|---|
+| `scenarios.json` | The 7 scenario walkthroughs |
+| `skills.json` | The 14 skills |
+| `zh-TW.json` | Traditional Chinese translations |
+| `meta.json` | Which superpowers version the content matches |
+
+Run `npm test` after editing. It checks the structure, cross-references, and that every entry has a zh-TW translation.
 
 ---
 
@@ -158,6 +178,11 @@ npm start
 本地端網頁應用程式，教你如何使用 [Superpowers Claude 外掛](https://github.com/obra/superpowers) 打造出色的專案。瀏覽 7 個開發情境與 14 個技能，包含逐步操作說明、一鍵複製指令及即時搜尋功能。支援**英文**與**繁體中文**介面切換。
 
 內容對應 **superpowers v6.3.0**。變更紀錄（日期、修改者、內容）請見 [CHANGELOG.md](CHANGELOG.md)。
+
+**兩種使用方式：**
+
+- **線上，免安裝：** https://peterlwkww-ai.github.io/Superpowers-guide/
+- **本機：** clone 後 `npm start`（步驟見下方）。適合離線使用或編輯內容時。
 
 ---
 
@@ -294,6 +319,21 @@ npm start
 
 ## 技術架構
 
-- **Node.js + Express** — 本地端伺服器
+- **Node.js + Express** — 在本機提供 `public/`
 - **Vanilla JS + CSS** — 無需建置步驟
-- **Fuse.js** — 模糊搜尋
+- **Fuse.js** — 模糊搜尋，已內建於 `public/vendor/`
+
+`public/` 是可獨立部署的靜態網站。每次 push 到 `master` 都會執行測試，並透過 `.github/workflows/pages.yml` 部署到 GitHub Pages。
+
+## 編輯內容
+
+所有文字都在 `public/data/` 的 JSON 檔裡：
+
+| 檔案 | 內容 |
+|---|---|
+| `scenarios.json` | 7 個情境的操作說明 |
+| `skills.json` | 14 個技能 |
+| `zh-TW.json` | 繁體中文翻譯 |
+| `meta.json` | 內容對應的 superpowers 版本 |
+
+編輯後執行 `npm test`，會檢查結構、交叉引用，以及每個項目是否都有繁中翻譯。

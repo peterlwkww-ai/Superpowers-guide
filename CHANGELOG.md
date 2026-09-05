@@ -5,6 +5,16 @@ Newest entries first. Each entry names the tool or person that made the change.
 
 ## 2026-09-05 — Claude Code (Claude Fable 5.1), on behalf of Peter
 
+**GitHub Pages deployment**
+
+- `public/` is now a self-contained static site: `data/` moved to `public/data/`, Fuse.js vendored into `public/vendor/`, all asset and fetch paths made relative so the app works under `/Superpowers-guide/`.
+- `index.js` reduced to serving `public/` with an SPA fallback.
+- Added `.github/workflows/pages.yml`: runs `npm test`, then deploys `public/` to GitHub Pages on every push to `master`.
+- `test.js` guards against root-absolute paths creeping back in and checks the vendored Fuse.js is served.
+- README: online URL, "Editing the content" section, updated tech stack notes.
+
+## 2026-09-05 — Claude Code (Claude Fable 5.1), on behalf of Peter
+
 **Visual refresh**
 
 - Light mode added alongside dark. Follows the system setting by default; the ☾/☀ button in the nav overrides it and the choice is remembered.
